@@ -10,8 +10,12 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.deployer.resource.support.DelegatingResourceLoader;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
+import org.springframework.cloud.deployer.spi.app.AppStatus;
+import org.springframework.cloud.deployer.spi.app.DeploymentState;
 import org.springframework.cloud.deployer.spi.core.AppDefinition;
 import org.springframework.cloud.deployer.spi.core.AppDeploymentRequest;
 import org.springframework.cloud.skipper.domain.Release;
@@ -30,6 +34,10 @@ public class DeploymentService {
 	private DelegatingResourceLoader delegatingResourceLoader;
 
 	private ReleaseRepository releaseRepository;
+
+	private final static Logger log = LoggerFactory
+			.getLogger(DeploymentService.class);
+
 
 	public DeploymentService(AppDeployer appDeployer,
 			DelegatingResourceLoader delegatingResourceLoader,
@@ -64,6 +72,30 @@ public class DeploymentService {
 		// TODO update status
 
 		releaseRepository.save(release);
+	}
+
+	public boolean isHealthy(Release release) {
+		boolean isHealthy = false;
+		long timeout = System.currentTimeMillis() + 60000;
+		while (!isHealthy && System.currentTimeMillis() < timeout) {
+			List<String> deploymentIds = Arrays
+					.asList(StringUtils.commaDelimitedListToStringArray(release.getDeploymentId()));
+			for (String deploymentId : deploymentIds) {
+				AppStatus status = appDeployer.status(deploymentId);
+				log.info("Deployement ID + " + deploymentId + ", status = " + status.getState());
+				if (status.getState() == DeploymentState.deployed) {
+					isHealthy = true;
+				}
+			}
+			try {
+				Thread.sleep( 2000);
+			}
+			catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				throw new IllegalStateException(e.getMessage(), e);
+			}
+		}
+		return isHealthy;
 	}
 
 	private AppDeploymentRequest createAppDeploymentRequest(Deployment deployment, String releaseName,

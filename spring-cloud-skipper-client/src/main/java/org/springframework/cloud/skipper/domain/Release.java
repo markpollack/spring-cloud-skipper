@@ -76,4 +76,14 @@ public class Release {
 	public void setVersion(int version) {
 		this.version = version;
 	}
+
+	@Override
+	public String toString() {
+		return "Release{" +
+				"id='" + id + '\'' +
+				", deploymentId='" + deploymentId + '\'' +
+				", name='" + name + '\'' +
+				", version=" + version +
+				'}';
+	}
 }

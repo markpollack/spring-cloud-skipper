@@ -34,7 +34,7 @@
         <spring-cloud.version>Dalston.RELEASE</spring-cloud.version>
         <spring-cloud-deployer.version>1.2.1.RELEASE</spring-cloud-deployer.version>
         <spring-cloud-deployer-local.version>1.2.0.RELEASE</spring-cloud-deployer-local.version>
-        <spring-cloud-deployer-cloudfoundry.version>1.2.1.RELEASE</spring-cloud-deployer-cloudfoundry.version>
+        <spring-cloud-deployer-cloudfoundry.version>1.2.2.BUILD-SNAPSHOT</spring-cloud-deployer-cloudfoundry.version>
         <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
         <surefire-maven-plugin.version>2.20</surefire-maven-plugin.version>
         <sonar-maven-plugin.version>3.0.2</sonar-maven-plugin.version>

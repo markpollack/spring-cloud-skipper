@@ -1,5 +1,8 @@
 package org.springframework.cloud.skipper.server.updaters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.server.repository.ManifestRepository;
@@ -12,6 +15,8 @@ public class SimpleUpdateStrategy implements UpdateStrategy {
 	private final DeploymentService deploymentService;
 
 	private final ManifestRepository manifestRepository;
+
+	private final static Logger log = LoggerFactory.getLogger(SimpleUpdateStrategy.class);
 
 	@Autowired
 	public SimpleUpdateStrategy(DeploymentService deploymentService, ManifestRepository manifestRepository) {
@@ -27,6 +32,12 @@ public class SimpleUpdateStrategy implements UpdateStrategy {
 
 		manifestRepository.save(updatedRelease);
 
+
+
+		deploymentService.isHealthy(updatedRelease);
+
+
+		log.info("Undeploying current release" + currentRelease);
 		deploymentService.undeploy(currentRelease);
 
 		// releaseDeployer.calculateStatus(updatedRelease);
