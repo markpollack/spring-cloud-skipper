@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.cloud.deployer.resource.support.DelegatingResourceLoader;
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
 import org.springframework.cloud.deployer.spi.app.AppStatus;
@@ -29,15 +29,11 @@ import org.springframework.util.StringUtils;
 @Service
 public class DeploymentService {
 
-	private AppDeployer appDeployer;
-
-	private DelegatingResourceLoader delegatingResourceLoader;
-
-	private ReleaseRepository releaseRepository;
-
 	private final static Logger log = LoggerFactory
 			.getLogger(DeploymentService.class);
-
+	private AppDeployer appDeployer;
+	private DelegatingResourceLoader delegatingResourceLoader;
+	private ReleaseRepository releaseRepository;
 
 	public DeploymentService(AppDeployer appDeployer,
 			DelegatingResourceLoader delegatingResourceLoader,
@@ -88,7 +84,7 @@ public class DeploymentService {
 				}
 			}
 			try {
-				Thread.sleep( 2000);
+				Thread.sleep(2000);
 			}
 			catch (InterruptedException e) {
 				Thread.currentThread().interrupt();

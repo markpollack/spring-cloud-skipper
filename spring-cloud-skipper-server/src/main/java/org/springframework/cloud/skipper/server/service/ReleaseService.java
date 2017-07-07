@@ -1,5 +1,9 @@
 package org.springframework.cloud.skipper.server.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.SkipperPackage;
@@ -40,7 +44,7 @@ public class ReleaseService {
 		deploymentService.deploy(release);
 		manifestRepository.save(release);
 
-		//TODO calculate status
+		// TODO calculate status
 
 		return release;
 	}
@@ -107,5 +111,13 @@ public class ReleaseService {
 		return sb.toString();
 	}
 
-
+	public Release[] history(String name) {
+		Iterable<Release> releases = releaseRepository.findAll();
+		List<Release> releaseList = new ArrayList<Release>();
+		for (Release release : releases) {
+			releaseList.add(release);
+		}
+		releaseList.sort(Comparator.comparing(Release::getVersion));
+		return releaseList.toArray(new Release[releaseList.size()]);
+	}
 }

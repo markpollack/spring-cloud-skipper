@@ -1,8 +1,6 @@
 package org.springframework.cloud.skipper.client;
 
-import org.springframework.cloud.skipper.api.InstallReleaseRequest;
-import org.springframework.cloud.skipper.api.RollbackReleaseRequest;
-import org.springframework.cloud.skipper.api.UpdateReleaseRequest;
+import org.springframework.cloud.skipper.api.*;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.SkipperPackage;
 import org.springframework.util.Assert;
@@ -44,5 +42,12 @@ public class SkipperClient {
 	public Release rollback(String releaseName, Integer releaseVersion) {
 		RollbackReleaseRequest request = new RollbackReleaseRequest(releaseName, releaseVersion);
 		return restTemplate.postForObject(baseUri + "/rollback", request, Release.class);
+	}
+
+	public Release[] history(String releaseName) {
+		HistoryRequest request = new HistoryRequest(releaseName);
+		HistoryResponse response = restTemplate.postForObject(baseUri + "/history", request,
+				HistoryResponse.class);
+		return response.getReleases();
 	}
 }

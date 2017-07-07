@@ -12,11 +12,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimpleUpdateStrategy implements UpdateStrategy {
 
-	private final DeploymentService deploymentService;
-
-	private final ManifestRepository manifestRepository;
-
 	private final static Logger log = LoggerFactory.getLogger(SimpleUpdateStrategy.class);
+	private final DeploymentService deploymentService;
+	private final ManifestRepository manifestRepository;
 
 	@Autowired
 	public SimpleUpdateStrategy(DeploymentService deploymentService, ManifestRepository manifestRepository) {
@@ -32,10 +30,7 @@ public class SimpleUpdateStrategy implements UpdateStrategy {
 
 		manifestRepository.save(updatedRelease);
 
-
-
 		deploymentService.isHealthy(updatedRelease);
-
 
 		log.info("Undeploying current release" + currentRelease);
 		deploymentService.undeploy(currentRelease);
