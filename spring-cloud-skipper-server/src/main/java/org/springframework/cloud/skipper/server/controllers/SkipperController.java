@@ -2,6 +2,7 @@ package org.springframework.cloud.skipper.server.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.api.InstallReleaseRequest;
+import org.springframework.cloud.skipper.api.RollbackReleaseRequest;
 import org.springframework.cloud.skipper.api.UpdateReleaseRequest;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.server.service.ReleaseService;
@@ -40,6 +41,13 @@ public class SkipperController {
 	public Release update(@RequestBody UpdateReleaseRequest updateReleaseRequest) {
 		return releaseService.update(updateReleaseRequest.getName(),
 				updateReleaseRequest.getSkipperPackage());
+	}
+
+	@PostMapping
+	@RequestMapping("/rollback")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Release rollback(@RequestBody RollbackReleaseRequest rollbackReleaseRequest) {
+		return releaseService.rollback(rollbackReleaseRequest.getName(), rollbackReleaseRequest.getVersion());
 	}
 
 	private Release createInitial(InstallReleaseRequest installReleaseRequest) {

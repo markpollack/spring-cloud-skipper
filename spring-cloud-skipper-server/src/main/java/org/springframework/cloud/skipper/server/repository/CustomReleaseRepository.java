@@ -9,4 +9,5 @@ public interface CustomReleaseRepository {
 
 	Release findLatestRelease(String releaseName);
 
+	Release findByNameAndVersion(String releaseName, int version);
 }

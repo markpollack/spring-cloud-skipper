@@ -45,6 +45,27 @@ public class ReleaseService {
 		return release;
 	}
 
+	public synchronized Release rollback(String name, int version) {
+
+		Release currentRelease = releaseRepository.findLatestRelease(name);
+		int rollbackVersion = version;
+		// Go back by one if no version specified
+		if (version == 0) {
+			rollbackVersion = currentRelease.getVersion() - 1;
+		}
+		Release previousRelease = releaseRepository.findByNameAndVersion(name, version);
+
+		Release newRelease = new Release();
+		newRelease.setName(name);
+		newRelease.setSkipperPackage(previousRelease.getSkipperPackage());
+		newRelease.setManifest(previousRelease.getManifest());
+		newRelease.setVersion(currentRelease.getVersion() + 1);
+
+		releaseRepository.save(newRelease);
+
+		return updateStrategy.update(currentRelease, newRelease);
+	}
+
 	public synchronized Release update(String name, SkipperPackage skipperPackage) {
 
 		Release currentRelease = releaseRepository.findLatestRelease(name);
@@ -85,5 +106,6 @@ public class ReleaseService {
 
 		return sb.toString();
 	}
+
 
 }
