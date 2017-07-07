@@ -2,6 +2,7 @@ package org.springframework.cloud.skipper.server.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,6 +52,18 @@ public class DeploymentService {
 
 		// TODO update status in DB.
 
+	}
+
+	public void undeploy(Release release) {
+		List<String> deploymentIds = Arrays
+				.asList(StringUtils.commaDelimitedListToStringArray(release.getDeploymentId()));
+
+		for (String deploymentId : deploymentIds) {
+			appDeployer.undeploy(deploymentId);
+		}
+		// TODO update status
+
+		releaseRepository.save(release);
 	}
 
 	private AppDeploymentRequest createAppDeploymentRequest(Deployment deployment, String releaseName,

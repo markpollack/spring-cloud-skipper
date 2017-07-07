@@ -7,7 +7,7 @@ import org.springframework.data.keyvalue.annotation.KeySpace;
 /**
  * @author Mark Pollack
  */
-//@RedisHash("releases")
+// @RedisHash("releases")
 @KeySpace("releases")
 public class Release {
 

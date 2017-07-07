@@ -2,6 +2,7 @@ package org.springframework.cloud.skipper.server.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.api.InstallReleaseRequest;
+import org.springframework.cloud.skipper.api.UpdateReleaseRequest;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.server.service.ReleaseService;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,14 @@ public class SkipperController {
 		Release release = createInitial(installReleaseRequest);
 		releaseService.install(release, installReleaseRequest.getSkipperPackage());
 		return release;
+	}
+
+	@PostMapping
+	@RequestMapping("/update")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Release update(@RequestBody UpdateReleaseRequest updateReleaseRequest) {
+		return releaseService.update(updateReleaseRequest.getName(),
+				updateReleaseRequest.getSkipperPackage());
 	}
 
 	private Release createInitial(InstallReleaseRequest installReleaseRequest) {

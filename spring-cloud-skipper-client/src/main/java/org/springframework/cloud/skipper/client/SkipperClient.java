@@ -1,6 +1,7 @@
 package org.springframework.cloud.skipper.client;
 
 import org.springframework.cloud.skipper.api.InstallReleaseRequest;
+import org.springframework.cloud.skipper.api.UpdateReleaseRequest;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.SkipperPackage;
 import org.springframework.util.Assert;
@@ -31,6 +32,12 @@ public class SkipperClient {
 		SkipperPackage skipperPackage = packageLoader.load(packagePath);
 		InstallReleaseRequest request = new InstallReleaseRequest(releaseName, skipperPackage);
 		return restTemplate.postForObject(baseUri + "/install", request, Release.class);
+	}
+
+	public Release update(String packagePath, String releaseName) {
+		SkipperPackage skipperPackage = packageLoader.load(packagePath);
+		UpdateReleaseRequest request = new UpdateReleaseRequest(releaseName, skipperPackage);
+		return restTemplate.postForObject(baseUri + "/update", request, Release.class);
 	}
 
 }
