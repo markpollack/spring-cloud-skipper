@@ -1,0 +1,11 @@
+kind: Deployment
+deployment:
+  name: time
+  count: 1
+  applicationProperties:
+    trigger.fixed-delay: 5
+    spring.cloud.stream.bindings.output.destination: timeData
+  resource: maven://org.springframework.cloud.stream.app:time-source-rabbit:1.2.0.RELEASE
+  resourceMetadata: maven://org.springframework.cloud.stream.app:time-source-rabbit:jar:metadata:1.2.0.RELEASE
+  deploymentProperties:
+    memory: 1024m

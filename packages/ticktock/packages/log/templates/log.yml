@@ -1,0 +1,11 @@
+kind: Deployment
+deployment:
+  name: log
+  count: 1
+  applicationProperties:
+    spring.cloud.stream.bindings.input.destination: timeData
+  resource: maven://org.springframework.cloud.stream.app:log-sink-rabbit:1.2.0.RELEASE
+  resourceMetadata: maven://org.springframework.cloud.stream.app:log-sink-rabbit:jar:metadata:1.2.0.RELEASE
+  deploymentProperties:
+    memory: 1024m
+
