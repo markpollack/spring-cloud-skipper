@@ -17,9 +17,16 @@ public class SkipperClientConfiguration {
 	}
 
 	@Bean
+	public PackageLoader packageLoader() {
+		return new PackageLoader();
+	}
+
+	@Bean
 	public SkipperClient skipperClient(RestTemplate restTemplate,
-			SkipperClientConfigurationProperties skipperClientConfigurationProperties) {
-		return new SkipperClient(restTemplate, skipperClientConfigurationProperties.getHost());
+			SkipperClientConfigurationProperties skipperClientConfigurationProperties,
+			PackageLoader packageLoader) {
+		return new SkipperClient(restTemplate, skipperClientConfigurationProperties.getHost(),
+				packageLoader);
 
 	}
 }
