@@ -2,9 +2,6 @@ package org.springframework.cloud.skipper.api;
 
 import org.springframework.cloud.skipper.domain.SkipperPackage;
 
-/**
- * @author Mark Pollack
- */
 public class InstallReleaseRequest {
 
 	private SkipperPackage skipperPackage;

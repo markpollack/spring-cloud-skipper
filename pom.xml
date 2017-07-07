@@ -26,9 +26,15 @@
         <jline.version>2.12</jline.version>
         <jopt.version>4.6</jopt.version>
 
+        <cloudfoundry-java-lib.version>2.14.0.RELEASE</cloudfoundry-java-lib.version>
+        <reactor-core.version>3.0.7.RELEASE</reactor-core.version>
+        <reactor-netty.version>0.6.4.RELEASE</reactor-netty.version>
+        <cloudfoundry-java-lib.version>2.14.0.RELEASE</cloudfoundry-java-lib.version>
+
         <spring-cloud.version>Dalston.RELEASE</spring-cloud.version>
-        <spring-cloud-deployer.version>1.2.0.RELEASE</spring-cloud-deployer.version>
+        <spring-cloud-deployer.version>1.2.1.RELEASE</spring-cloud-deployer.version>
         <spring-cloud-deployer-local.version>1.2.0.RELEASE</spring-cloud-deployer-local.version>
+        <spring-cloud-deployer-cloudfoundry.version>1.2.1.RELEASE</spring-cloud-deployer-cloudfoundry.version>
         <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
         <surefire-maven-plugin.version>2.20</surefire-maven-plugin.version>
         <sonar-maven-plugin.version>3.0.2</sonar-maven-plugin.version>
