@@ -12,10 +12,12 @@ import org.springframework.cloud.deployer.resource.maven.MavenResourceLoader;
 import org.springframework.cloud.deployer.resource.support.DelegatingResourceLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.map.repository.config.EnableMapRepositories;
+//import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 @SpringBootApplication
-@EnableRedisRepositories
+//@EnableRedisRepositories
+@EnableMapRepositories
 public class SkipperServerApplication {
 
 	public static void main(String[] args) {

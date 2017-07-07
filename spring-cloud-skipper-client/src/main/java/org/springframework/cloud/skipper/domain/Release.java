@@ -1,12 +1,14 @@
 package org.springframework.cloud.skipper.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.keyvalue.annotation.KeySpace;
+//import org.springframework.data.redis.core.RedisHash;
 
 /**
  * @author Mark Pollack
  */
-@RedisHash("releases")
+//@RedisHash("releases")
+@KeySpace("releases")
 public class Release {
 
 	@Id

@@ -40,11 +40,17 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
         </dependency>
+
+        <!-- Local Impl -->
+
         <!--<dependency>-->
             <!--<groupId>org.springframework.cloud</groupId>-->
             <!--<artifactId>spring-cloud-deployer-local</artifactId>-->
             <!--<version>${spring-cloud-deployer-local.version}</version>-->
         <!--</dependency>-->
+
+        <!-- Cloud Foundry Impl -->
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-deployer-spi</artifactId>
@@ -76,6 +82,8 @@
             <artifactId>reactor-netty</artifactId>
             <version>${reactor-netty.version}</version>
         </dependency>
+
+        <!-- Cloud Foundry Impl End -->
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>

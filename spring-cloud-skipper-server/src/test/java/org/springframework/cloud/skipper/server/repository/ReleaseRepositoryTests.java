@@ -2,8 +2,6 @@ package org.springframework.cloud.skipper.server.repository;
 
 import java.util.Scanner;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -11,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.server.SkipperServerApplication;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,20 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReleaseRepositoryTests {
 
 	@Autowired
-	private StringRedisTemplate stringRedisTemplate;
-
-	@Autowired
 	private ReleaseRepository releaseRepository;
-
-	@Before
-	@After
-	public void setUp() {
-
-		stringRedisTemplate.execute((RedisConnection connection) -> {
-			connection.flushDb();
-			return "OK";
-		});
-	}
 
 	@Test
 	public void testReleaseRepository() {
