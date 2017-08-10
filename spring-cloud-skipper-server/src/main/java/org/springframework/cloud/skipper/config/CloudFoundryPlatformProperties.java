@@ -15,16 +15,28 @@
  */
 package org.springframework.cloud.skipper.config;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryConnectionProperties;
 
 /**
- * Main configuration class for the server.
- *
  * @author Mark Pollack
  */
-@Configuration
-@EnableConfigurationProperties({ SkipperServerProperties.class, CloudFoundryPlatformProperties.class,
-		LocalPlatformProperties.class })
-public class SkipperServerConfiguration {
+@ConfigurationProperties("spring.cloud.skipper.server.platform.cloudfoundry")
+public class CloudFoundryPlatformProperties {
+
+	private Map<String, CloudFoundryConnectionProperties> accounts = new LinkedHashMap<>();
+
+	public CloudFoundryPlatformProperties() {
+	}
+
+	public Map<String, CloudFoundryConnectionProperties> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Map<String, CloudFoundryConnectionProperties> accounts) {
+		this.accounts = accounts;
+	}
 }
