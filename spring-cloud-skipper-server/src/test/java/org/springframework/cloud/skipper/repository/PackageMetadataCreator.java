@@ -15,7 +15,7 @@
  */
 package org.springframework.cloud.skipper.repository;
 
-import org.springframework.cloud.skipper.index.PackageMetadata;
+import org.springframework.cloud.skipper.domain.PackageMetadata;
 
 /**
  * @author Mark Pollack

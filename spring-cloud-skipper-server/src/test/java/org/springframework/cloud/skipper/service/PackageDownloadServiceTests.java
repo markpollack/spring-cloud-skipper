@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.AbstractIntegrationTest;
 import org.springframework.cloud.skipper.config.SkipperServerProperties;
-import org.springframework.cloud.skipper.index.PackageMetadata;
+import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.repository.PackageMetadataRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;

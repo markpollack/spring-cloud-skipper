@@ -25,8 +25,8 @@ import org.zeroturnaround.zip.ZipUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.config.SkipperServerProperties;
+import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.index.PackageException;
-import org.springframework.cloud.skipper.index.PackageMetadata;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;

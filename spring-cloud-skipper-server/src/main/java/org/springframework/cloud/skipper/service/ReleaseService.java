@@ -17,8 +17,8 @@ package org.springframework.cloud.skipper.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.domain.InstallProperties;
+import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.cloud.skipper.domain.Release;
-import org.springframework.cloud.skipper.index.PackageMetadata;
 import org.springframework.cloud.skipper.repository.PackageMetadataRepository;
 import org.springframework.stereotype.Service;
 
