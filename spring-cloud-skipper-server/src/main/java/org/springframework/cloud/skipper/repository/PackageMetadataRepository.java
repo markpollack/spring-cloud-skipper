@@ -30,4 +30,6 @@ public interface PackageMetadataRepository extends PagingAndSortingRepository<Pa
 
 	List<PackageMetadata> findByName(@Param("name") String name);
 
+	PackageMetadata findByNameAndVersion(@Param("name") String name, @Param("version") String version);
+
 }
