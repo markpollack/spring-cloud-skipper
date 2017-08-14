@@ -15,45 +15,9 @@
  */
 package org.springframework.cloud.skipper.domain;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.springframework.util.StringUtils;
-
 /**
  * @author Mark Pollack
  */
-public class ConfigValues {
+public class Package {
 
-	private String raw;
-
-	private Map<String, String> values;
-
-	public ConfigValues() {
-	}
-
-	public String getRaw() {
-		return raw;
-	}
-
-	public void setRaw(String raw) {
-		this.raw = raw;
-	}
-
-	public Map<String, String> getValues() {
-		return values;
-	}
-
-	public void setValues(Map<String, String> values) {
-		this.values = values;
-	}
-
-	@JsonIgnore
-	public boolean isConfigEmpty() {
-		if (values == null || StringUtils.isEmpty(raw)) {
-			return true;
-		}
-		return false;
-	}
 }

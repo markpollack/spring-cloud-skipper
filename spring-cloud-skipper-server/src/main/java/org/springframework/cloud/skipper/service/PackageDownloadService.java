@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.zip.ZipUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.config.SkipperServerProperties;
@@ -31,7 +32,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
-import org.zeroturnaround.zip.ZipUtil;
 
 /**
  * @author Mark Pollack
@@ -74,12 +74,13 @@ public class PackageDownloadService implements ResourceLoaderAware {
 	}
 
 	public File calculatePackageUnzippedDirectory(PackageMetadata packageMetadata, File targetPath) {
-		return  new File(targetPath, packageMetadata.getName() + "-" + packageMetadata.getVersion());
+		return new File(targetPath, packageMetadata.getName() + "-" + packageMetadata.getVersion());
 	}
 
 	/**
-	 * Give the PackageMetadata, return the directory where the package will be downloaded.  The directory
-	 * takes the server's PackageDir configuraiton property and appends the package name taken from the metadata.
+	 * Give the PackageMetadata, return the directory where the package will be downloaded.
+	 * The directory takes the server's PackageDir configuraiton property and appends the
+	 * package name taken from the metadata.
 	 * @param packageMetadata the package's metadata.
 	 * @return The directory where the package will be downloaded.
 	 */

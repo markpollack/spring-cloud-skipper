@@ -34,7 +34,7 @@ public class ReleaseService {
 
 	@Autowired
 	public ReleaseService(PackageMetadataRepository packageMetadataRepository,
-						  PackageDownloadService packageDownloadService) {
+			PackageDownloadService packageDownloadService) {
 		this.packageMetadataRepository = packageMetadataRepository;
 		this.packageDownloadService = packageDownloadService;
 	}

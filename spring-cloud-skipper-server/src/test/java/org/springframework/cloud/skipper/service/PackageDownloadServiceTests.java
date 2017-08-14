@@ -15,6 +15,15 @@
  */
 package org.springframework.cloud.skipper.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,24 +36,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.FileSystemUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mark Pollack
  */
 @ActiveProfiles("repo-test")
-@TestPropertySource(properties = { "spring.cloud.skipper.server.synchonizeIndexOnContextRefresh=true"})
+@TestPropertySource(properties = { "spring.cloud.skipper.server.synchonizeIndexOnContextRefresh=true" })
 public class PackageDownloadServiceTests extends AbstractIntegrationTest {
-
 
 	@Autowired
 	private PackageDownloadService packageDownloadService;
@@ -72,15 +71,16 @@ public class PackageDownloadServiceTests extends AbstractIntegrationTest {
 		assertThat(packageDirectory).exists().canRead().canWrite();
 		File packageFile = packageDownloadService.calculatePackageZipFile(packageMetadata, packageDirectory);
 		assertThat(packageFile).exists();
-		File unzippedPackageDirectory =
-				packageDownloadService.calculatePackageUnzippedDirectory(packageMetadata, packageDirectory);
+		File unzippedPackageDirectory = packageDownloadService.calculatePackageUnzippedDirectory(packageMetadata,
+				packageDirectory);
 		assertThat(unzippedPackageDirectory).exists();
 		List<File> files;
 		try (Stream<Path> paths = Files.walk(Paths.get(unzippedPackageDirectory.toString()), 2)) {
 			files = paths.map(i -> i.toAbsolutePath().toFile()).collect(Collectors.toList());
 		}
 		catch (IOException e) {
-			throw new IllegalArgumentException("Could not process files in path " + unzippedPackageDirectory.toString(), e);
+			throw new IllegalArgumentException("Could not process files in path " + unzippedPackageDirectory.toString(),
+					e);
 		}
 		assertThat(files).extracting("name")
 				.contains("values.yml", "package.yml", "log.yml");
