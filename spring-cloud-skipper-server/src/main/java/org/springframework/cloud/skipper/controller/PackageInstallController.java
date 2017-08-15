@@ -47,7 +47,7 @@ public class PackageInstallController {
 	@PostMapping
 	@RequestMapping(path = "/packageMetadata/{id}/install")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Release install(@PathVariable("id") long id, @RequestBody InstallProperties installProperties) {
+	public Release install(@PathVariable("id") String id, @RequestBody InstallProperties installProperties) {
 		return releaseService.install(id, installProperties);
 	}
 }

@@ -15,9 +15,69 @@
  */
 package org.springframework.cloud.skipper.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Mark Pollack
  */
 public class Package {
 
+	// Metadata describing the package
+	private PackageMetadata metadata;
+
+	// The templates for this package
+	private List<Template> templates = new ArrayList<>();
+
+	// The packages that this package depends upon
+	private List<Package> dependencies = new ArrayList<>();
+
+	// The configuration data that this package depends on
+	private ConfigValues configValues;
+
+	// Miscellaneous files in a package, e.g. README, LICENSE, etc.
+	private List<FileHolder> fileHolders = new ArrayList<>();
+
+	public Package() {
+	}
+
+	public PackageMetadata getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(PackageMetadata metadata) {
+		this.metadata = metadata;
+	}
+
+	public List<Template> getTemplates() {
+		return templates;
+	}
+
+	public void setTemplates(List<Template> templates) {
+		this.templates = templates;
+	}
+
+	public List<Package> getDependencies() {
+		return dependencies;
+	}
+
+	public void setDependencies(List<Package> dependencies) {
+		this.dependencies = dependencies;
+	}
+
+	public ConfigValues getConfigValues() {
+		return configValues;
+	}
+
+	public void setConfigValues(ConfigValues configValues) {
+		this.configValues = configValues;
+	}
+
+	public List<FileHolder> getFileHolders() {
+		return fileHolders;
+	}
+
+	public void setFileHolders(List<FileHolder> fileHolders) {
+		this.fileHolders = fileHolders;
+	}
 }

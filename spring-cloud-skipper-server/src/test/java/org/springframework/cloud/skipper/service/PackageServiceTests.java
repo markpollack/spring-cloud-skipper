@@ -30,7 +30,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.AbstractIntegrationTest;
 import org.springframework.cloud.skipper.config.SkipperServerProperties;
+import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
+import org.springframework.cloud.skipper.domain.Template;
 import org.springframework.cloud.skipper.repository.PackageMetadataRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -43,10 +45,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ActiveProfiles("repo-test")
 @TestPropertySource(properties = { "spring.cloud.skipper.server.synchonizeIndexOnContextRefresh=true" })
-public class PackageDownloadServiceTests extends AbstractIntegrationTest {
+public class PackageServiceTests extends AbstractIntegrationTest {
 
 	@Autowired
-	private PackageDownloadService packageDownloadService;
+	private PackageService packageService;
 
 	@Autowired
 	private PackageMetadataRepository packageMetadataRepository;
@@ -66,13 +68,12 @@ public class PackageDownloadServiceTests extends AbstractIntegrationTest {
 
 		PackageMetadata packageMetadata = packageMetadataRepository.findByNameAndVersion("log", "1.0.0");
 		assertThat(packageMetadata).isNotNull();
-		packageDownloadService.downloadPackage(packageMetadata);
-		File packageDirectory = packageDownloadService.calculatePackageDirectory(packageMetadata);
+		packageService.downloadPackage(packageMetadata);
+		File packageDirectory = packageService.calculatePackageDirectory(packageMetadata);
 		assertThat(packageDirectory).exists().canRead().canWrite();
-		File packageFile = packageDownloadService.calculatePackageZipFile(packageMetadata, packageDirectory);
+		File packageFile = packageService.calculatePackageZipFile(packageMetadata, packageDirectory);
 		assertThat(packageFile).exists();
-		File unzippedPackageDirectory = packageDownloadService.calculatePackageUnzippedDirectory(packageMetadata,
-				packageDirectory);
+		File unzippedPackageDirectory = packageService.calculatePackageUnzippedDirectory(packageMetadata);
 		assertThat(unzippedPackageDirectory).exists();
 		List<File> files;
 		try (Stream<Path> paths = Files.walk(Paths.get(unzippedPackageDirectory.toString()), 2)) {
@@ -84,5 +85,19 @@ public class PackageDownloadServiceTests extends AbstractIntegrationTest {
 		}
 		assertThat(files).extracting("name")
 				.contains("values.yml", "package.yml", "log.yml");
+	}
+
+	@Test
+	public void deserializePackage() {
+		PackageMetadata packageMetadata = packageMetadataRepository.findByNameAndVersion("log", "1.0.0");
+		packageService.downloadPackage(packageMetadata);
+		Package pkg = packageService.loadPackage(packageMetadata);
+		assertThat(pkg).isNotNull();
+		assertThat(pkg.getConfigValues().getRaw()).contains("1024m");
+		assertThat(pkg.getMetadata()).isEqualTo(packageMetadata);
+		assertThat(pkg.getTemplates()).hasSize(1);
+		Template template = pkg.getTemplates().get(0);
+		assertThat(template.getName()).isEqualTo("log.yml");
+		assertThat(template.getData()).isNotEmpty();
 	}
 }

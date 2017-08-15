@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cloud.skipper.repository;
+package org.springframework.cloud.skipper.deployer;
 
-import java.util.List;
-
-import org.springframework.cloud.skipper.domain.PackageMetadata;
+import org.springframework.cloud.skipper.domain.AppDeployerData;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 /**
  * @author Mark Pollack
  */
-@RepositoryRestResource(path = "packageMetadata", collectionResourceRel = "packageMetadata")
-public interface PackageMetadataRepository extends PagingAndSortingRepository<PackageMetadata, String> {
+public interface AppDeployerDataRepository extends PagingAndSortingRepository<AppDeployerData, String> {
 
-	List<PackageMetadata> findByName(@Param("name") String name);
-
-	PackageMetadata findByNameAndVersion(@Param("name") String name, @Param("version") String version);
+	AppDeployerData findByReleaseNameAndReleaseVersion(String releaseName, String releaseVersion);
 
 }

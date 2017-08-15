@@ -15,47 +15,27 @@
  */
 package org.springframework.cloud.skipper.domain;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.springframework.util.StringUtils;
-
 /**
  * @author Mark Pollack
  */
-public class ConfigValues {
+public enum StatusCode {
 
-	// The raw YML string of configuration values.
-	private String raw;
+	// Status_UNKNOWN indicates that a release is in an uncertain state.
+	UNKNOWN,
 
-	// TODO: not currently used.
-	private Map<String, String> values;
+	// Status_DEPLOYED indicates that the release has been pushed to Kubernetes.
+	DEPLOYED,
 
-	public ConfigValues() {
-	}
+	// Status_DELETED indicates that a release has been deleted from Kubermetes.
+	DELETED,
 
-	public String getRaw() {
-		return raw;
-	}
+	// Status_SUPERSEDED indicates that this release object is outdated and a newer one
+	// exists.
+	SUPERSEDED,
 
-	public void setRaw(String raw) {
-		this.raw = raw;
-	}
+	// Status_FAILED indicates that the release was not successfully deployed.
+	FAILED,
 
-	public Map<String, String> getValues() {
-		return values;
-	}
-
-	public void setValues(Map<String, String> values) {
-		this.values = values;
-	}
-
-	@JsonIgnore
-	public boolean isConfigEmpty() {
-		if (values == null || StringUtils.isEmpty(raw)) {
-			return true;
-		}
-		return false;
-	}
+	// Status_DELETING indicates that a delete operation is underway.
+	DELETING
 }

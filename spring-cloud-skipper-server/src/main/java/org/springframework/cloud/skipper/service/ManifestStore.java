@@ -13,28 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cloud.skipper.domain;
+package org.springframework.cloud.skipper.service;
 
-import org.springframework.data.rest.core.config.Projection;
+import org.springframework.cloud.skipper.domain.Release;
 
 /**
- * Defines summary information of a package, only the id, name, version and IconUrl.
- *
- * Interface that adds the Spring Data REST Projection annotation to avoid adding a Spring
- * Data REST dependency to the core skipper domain class.
- *
- * NOTE: Projection interfaces need to be in the same Java package as the core domain
- * model entity.
  * @author Mark Pollack
  */
-@Projection(name = "summary", types = { PackageMetadata.class })
-public interface PackageSummary {
+public interface ManifestStore {
 
-	String getId();
-
-	String getName();
-
-	String getVersion();
-
-	String getIconUrl();
+	/**
+	 * Store the manifest file for the given release.
+	 * @param release the release object that contains the manifest file to store.
+	 */
+	void store(Release release);
 }

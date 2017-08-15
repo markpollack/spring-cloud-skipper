@@ -15,47 +15,36 @@
  */
 package org.springframework.cloud.skipper.domain;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.springframework.util.StringUtils;
-
 /**
+ * Template represents a template file as a name/value pair. By convention, name is a
+ * relative path within the scope of the chart's base directory.
+ *
  * @author Mark Pollack
  */
-public class ConfigValues {
+public class Template {
 
-	// The raw YML string of configuration values.
-	private String raw;
+	// Name is the path-like name of the template.
+	private String name;
 
-	// TODO: not currently used.
-	private Map<String, String> values;
+	// Data is the template as string data.
+	private String data;
 
-	public ConfigValues() {
+	public Template() {
 	}
 
-	public String getRaw() {
-		return raw;
+	public String getName() {
+		return name;
 	}
 
-	public void setRaw(String raw) {
-		this.raw = raw;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public Map<String, String> getValues() {
-		return values;
+	public String getData() {
+		return data;
 	}
 
-	public void setValues(Map<String, String> values) {
-		this.values = values;
-	}
-
-	@JsonIgnore
-	public boolean isConfigEmpty() {
-		if (values == null || StringUtils.isEmpty(raw)) {
-			return true;
-		}
-		return false;
+	public void setData(String data) {
+		this.data = data;
 	}
 }

@@ -15,47 +15,37 @@
  */
 package org.springframework.cloud.skipper.domain;
 
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import org.springframework.util.StringUtils;
-
 /**
- * @author Mark Pollack
+ * Wrapper for a app deployment manifest
  */
-public class ConfigValues {
+public class AppDeploymentKind {
 
-	// The raw YML string of configuration values.
-	private String raw;
+	private String kind;
 
-	// TODO: not currently used.
-	private Map<String, String> values;
+	private Deployment deployment;
 
-	public ConfigValues() {
+	public AppDeploymentKind() {
 	}
 
-	public String getRaw() {
-		return raw;
+	public AppDeploymentKind(String kind, Deployment deployment) {
+
+		this.kind = kind;
+		this.deployment = deployment;
 	}
 
-	public void setRaw(String raw) {
-		this.raw = raw;
+	public String getKind() {
+		return kind;
 	}
 
-	public Map<String, String> getValues() {
-		return values;
+	public void setKind(String kind) {
+		this.kind = kind;
 	}
 
-	public void setValues(Map<String, String> values) {
-		this.values = values;
+	public Deployment getDeployment() {
+		return deployment;
 	}
 
-	@JsonIgnore
-	public boolean isConfigEmpty() {
-		if (values == null || StringUtils.isEmpty(raw)) {
-			return true;
-		}
-		return false;
+	public void setDeployment(Deployment deployment) {
+		this.deployment = deployment;
 	}
 }
