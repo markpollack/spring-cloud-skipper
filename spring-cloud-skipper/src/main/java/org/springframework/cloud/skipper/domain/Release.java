@@ -44,7 +44,6 @@ public class Release {
 
 	private Package pkg;
 
-	@OneToOne
 	private ConfigValues configValues;
 
 	private String manifest;

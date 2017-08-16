@@ -30,6 +30,7 @@ import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.repository.PackageMetadataRepository;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -53,19 +54,28 @@ public class ReleaseService {
 		this.releaseManager = releaseManager;
 	}
 
+	/**
+	 * Downloads the package metadata and package zip file specified by the given Id and installs the
+	 * package on the target platform.
+	 * @param id of the package
+	 * @param installProperties contains the name of the release, the platfrom to deploy to, and configuration values
+	 *                          to replace in the package template.
+	 * @return the Release object associated with this installation
+	 */
 	public Release install(String id, InstallProperties installProperties) {
+		Assert.notNull(installProperties,"Install Properties can not be null");
 		PackageMetadata packageMetadata = packageMetadataRepository.findOne(id);
 		packageService.downloadPackage(packageMetadata);
 		Package packageToInstall = packageService.loadPackage(packageMetadata);
-		Release release = createInitialRelease(installProperties.getReleaseName(), installProperties.getPlatformName());
+		Release release = createInitialRelease(installProperties, packageToInstall);
 
-		return install(release, packageToInstall, installProperties.getConfigValues());
+		return install(release);
 	}
 
-	private Release install(Release release, Package packageToInstall, ConfigValues configValues) {
-		Properties model = mergeConfigValues(release.getPkg().getConfigValues(), configValues);
+	private Release install(Release release) {
+		Properties model = mergeConfigValues(release.getConfigValues(), release.getPkg().getConfigValues());
 		// Render yaml resources
-		String manifest = createManifest(packageToInstall, model);
+		String manifest = createManifest(release.getPkg(), model);
 		release.setManifest(manifest);
 
 		// Deployment
@@ -167,12 +177,14 @@ public class ReleaseService {
 
 	}
 
-	private Release createInitialRelease(String releaseName, String platformName) {
+	private Release createInitialRelease(InstallProperties installProperties, Package packageToInstall) {
 		Release release = new Release();
-		release.setName(releaseName);
-		release.setPlatformName(platformName);
-		release.setVersion(1);
+		release.setName(installProperties.getReleaseName());
+		release.setPlatformName(installProperties.getPlatformName());
+		release.setConfigValues(installProperties.getConfigValues());
+		release.setPkg(packageToInstall);
 
+		release.setVersion(1);
 		Info info = new Info();
 		info.setFirstDeployed(new Date());
 		info.setLastDeployed(new Date());

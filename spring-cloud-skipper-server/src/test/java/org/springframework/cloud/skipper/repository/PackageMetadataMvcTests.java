@@ -41,9 +41,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PackageMetadataMvcTests extends AbstractMockMvcTests {
 
 	@Autowired
-	private MockMvc mockMvc;
-
-	@Autowired
 	private PackageMetadataRepository packageMetadataRepository;
 
 	@Test

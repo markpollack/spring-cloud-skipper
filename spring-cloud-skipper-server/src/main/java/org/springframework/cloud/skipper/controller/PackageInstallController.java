@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
  * @author Mark Pollack
  */
 @RestController
-@RequestMapping
+@RequestMapping("/package")
 public class PackageInstallController {
 
 	private ReleaseService releaseService;
@@ -37,15 +37,15 @@ public class PackageInstallController {
 		this.releaseService = releaseService;
 	}
 
-	@PostMapping
-	@RequestMapping("/packageMetadata/install")
-	@ResponseStatus(HttpStatus.CREATED)
-	public Release install(@RequestBody InstallRequest installRequest) {
-		return null;
-	}
+//	@PostMapping
+//	@RequestMapping("/packageMetadata/install")
+//	@ResponseStatus(HttpStatus.CREATED)
+//	public Release install(@RequestBody InstallRequest installRequest) {
+//		return null;
+//	}
 
-	@PostMapping
-	@RequestMapping(path = "/packageMetadata/{id}/install")
+	//@PostMapping
+	@RequestMapping(path = "/{id}/install", method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	public Release install(@PathVariable("id") String id, @RequestBody InstallProperties installProperties) {
 		return releaseService.install(id, installProperties);

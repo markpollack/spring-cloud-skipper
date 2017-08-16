@@ -20,6 +20,8 @@ package org.springframework.cloud.skipper.domain;
  */
 public class AppDeploymentKind {
 
+	private String apiVersion = "v1";
+
 	private String kind;
 
 	private Deployment deployment;
@@ -31,6 +33,14 @@ public class AppDeploymentKind {
 
 		this.kind = kind;
 		this.deployment = deployment;
+	}
+
+	public String getApiVersion() {
+		return apiVersion;
+	}
+
+	public void setApiVersion(String apiVersion) {
+		this.apiVersion = apiVersion;
 	}
 
 	public String getKind() {
