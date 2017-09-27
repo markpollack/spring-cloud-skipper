@@ -292,6 +292,7 @@ public class PackageService implements ResourceLoaderAware {
 				pkg.setDependencies(dependencies);
 			}
 		}
+		//TODO why is this here?
 		if (!FileSystemUtils.deleteRecursively(unpackedPackage)) {
 			logger.warn("Temporary directory can not be deleted: " + unpackedPackage);
 		}
