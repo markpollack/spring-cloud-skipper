@@ -59,8 +59,8 @@ public class DefaultSkipperClient implements SkipperClient {
 	private final Traverson traverson;
 
 	/**
-	 * Create a new DefaultSkipperClient given the URL of the Server. This constructor
-	 * will create a new RestTemplate instance for communication.
+	 * Create a new DefaultSkipperClient given the URL of the Server. This constructor will
+	 * create a new RestTemplate instance for communication.
 	 *
 	 * @param baseUrl the URL of the Server.
 	 */

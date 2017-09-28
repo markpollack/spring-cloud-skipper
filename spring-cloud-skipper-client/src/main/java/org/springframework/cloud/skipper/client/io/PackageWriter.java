@@ -29,6 +29,7 @@ public interface PackageWriter {
 	 * metadata.
 	 * @param pkg the package to write
 	 * @param directory the directory where to create the zip file of the package.
+	 * @return the zip file in the specified directory.
 	 */
-	void write(Package pkg, File directory);
+	File write(Package pkg, File directory);
 }

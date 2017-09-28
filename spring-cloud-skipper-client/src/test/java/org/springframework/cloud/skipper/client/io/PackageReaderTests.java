@@ -15,19 +15,27 @@
  */
 package org.springframework.cloud.skipper.client.io;
 
-import java.io.File;
+import java.io.IOException;
+
+import org.junit.Test;
 
 import org.springframework.cloud.skipper.domain.Package;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mark Pollack
  */
-public interface PackageReader {
+public class PackageReaderTests {
 
-	/**
-	 * Reads the Package from the specified file
-	 * @param file the package file
-	 * @return the corresponding Package
-	 */
-	Package read(File file);
+	@Test
+	public void read() throws IOException {
+		Resource resource = new ClassPathResource("/repositories/sources/test/ticktock/ticktock-1.0.0");
+		PackageReader packageReader = new DefaultPackageReader();
+
+		Package pkg = packageReader.read(resource.getFile());
+		assertThat(pkg).isNotNull();
+	}
 }

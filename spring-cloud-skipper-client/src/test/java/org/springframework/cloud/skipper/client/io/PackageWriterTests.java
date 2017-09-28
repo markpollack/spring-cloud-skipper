@@ -17,6 +17,7 @@ package org.springframework.cloud.skipper.client.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,11 +25,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
 
 import org.junit.Test;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.zeroturnaround.zip.ZipEntryCallback;
+import org.zeroturnaround.zip.ZipUtil;
 
+import org.springframework.cloud.skipper.client.TestResourceUtils;
 import org.springframework.cloud.skipper.domain.ConfigValues;
 import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
@@ -36,6 +41,8 @@ import org.springframework.cloud.skipper.domain.Template;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Mark Pollack
@@ -49,11 +56,40 @@ public class PackageWriterTests {
 		PackageMetadata packageMetadata = pkgtoWrite.getMetadata();
 
 		Path tempPath = Files.createTempDirectory("tests");
-		File outputfile = new File(tempPath.toFile(),
-				packageMetadata.getName() + "-" + packageMetadata.getVersion() + ".zip");
+		File outputDirectory = tempPath.toFile();
 
-		packageWriter.write(pkgtoWrite, outputfile);
+		File zipFile = packageWriter.write(pkgtoWrite, outputDirectory);
+		assertThat(zipFile).exists();
+		assertThat(zipFile.getName()).isEqualTo("myapp-1.0.0.zip");
+		ZipUtil.iterate(zipFile, new ZipEntryCallback() {
+			@Override
+			public void process(InputStream inputStream, ZipEntry zipEntry) throws IOException {
+				if (zipEntry.getName().equalsIgnoreCase("package.yml")) {
+					assertExpectedContents(inputStream, "package.yml");
+				}
+				if (zipEntry.getName().equalsIgnoreCase("values.yml")) {
+					assertExpectedContents(inputStream, "values.yml");
+				}
+				if (zipEntry.getName().equals("myapp.yml")) {
+					assertExpectedContents(inputStream, "generic-template.yml");
+				}
+			}
+		});
 	}
+
+	private void assertExpectedContents(InputStream zipEntryInputStream, String resourceSuffix) throws IOException {
+		String zipEntryAsString = StreamUtils.copyToString(zipEntryInputStream, Charset.defaultCharset());
+		String expectedYaml = StreamUtils.copyToString(
+				TestResourceUtils.qualifiedResource(getClass(), resourceSuffix)
+						.getInputStream(),
+				Charset.defaultCharset());
+		assertThat(zipEntryAsString).isEqualTo(expectedYaml);
+	}
+	/*
+	 * String expectedYaml = StreamUtils.copyToString(
+	 * TestResourceUtils.qualifiedResource(getClass(), "merged.yaml").getInputStream(),
+	 * Charset.defaultCharset()); assertThat(mergedYaml).isEqualTo(expectedYaml);
+	 */
 
 	private Package createSimplePackage() throws IOException {
 		Package pkg = new Package();

@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.zeroturnaround.zip.ZipUtil;
 
 import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
@@ -51,9 +52,8 @@ public class DefaultPackageWriter implements PackageWriter {
 	}
 
 	@Override
-	public void write(Package pkg, File file) {
+	public File write(Package pkg, File targetDirectory) {
 		File tmpDir = createTempDirectory("skipper" + pkg.getMetadata().getName()).toFile();
-		File tmpTargetZipFile = calculatePackageZipFile(pkg.getMetadata(), tmpDir);
 		String packageMetadata = generatePackageMetadata(pkg.getMetadata());
 		writeText(new File(tmpDir, "package.yml"), packageMetadata);
 		writeText(new File(tmpDir, "values.yml"), pkg.getConfigValues().getRaw());
@@ -61,8 +61,9 @@ public class DefaultPackageWriter implements PackageWriter {
 		templateDir.mkdirs();
 		File templateFile = new File(templateDir, pkg.getMetadata().getName() + ".yml");
 		writeText(templateFile, getDefaultTemplate());
-
-		System.out.println("test");
+		File targetZipFile = calculatePackageZipFile(pkg.getMetadata(), targetDirectory);
+		ZipUtil.pack(tmpDir, targetZipFile);
+		return targetZipFile;
 	}
 
 	private String getDefaultTemplate() {
