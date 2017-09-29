@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cloud.skipper.client.io;
+package org.springframework.cloud.skipper.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +75,6 @@ public class DefaultPackageReader implements PackageReader {
 
 			// dependent packages
 			if ((file.getName().equalsIgnoreCase("packages") && file.isDirectory())) {
-				System.out.println("found the packages directory");
 				File[] dependentPackageDirectories = file.listFiles();
 				List<Package> dependencies = new ArrayList<>();
 				for (File dependentPackageDirectory : dependentPackageDirectories) {

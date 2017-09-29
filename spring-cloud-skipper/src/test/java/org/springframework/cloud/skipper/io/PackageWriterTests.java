@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cloud.skipper.client.io;
+package org.springframework.cloud.skipper.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.zeroturnaround.zip.ZipEntryCallback;
 import org.zeroturnaround.zip.ZipUtil;
 
-import org.springframework.cloud.skipper.client.TestResourceUtils;
+import org.springframework.cloud.skipper.TestResourceUtils;
 import org.springframework.cloud.skipper.domain.ConfigValues;
 import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
@@ -112,7 +112,7 @@ public class PackageWriterTests {
 		pkg.setConfigValues(configValues);
 
 		// Add template
-		Resource resource = new ClassPathResource("/org/springframework/cloud/skipper/client/io/generic-template.yml");
+		Resource resource = new ClassPathResource("/org/springframework/cloud/skipper/io/generic-template.yml");
 		String genericTempateData = StreamUtils.copyToString(resource.getInputStream(), Charset.defaultCharset());
 		Template template = new Template();
 		template.setData(genericTempateData);
