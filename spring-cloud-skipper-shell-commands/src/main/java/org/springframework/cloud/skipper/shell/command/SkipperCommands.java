@@ -79,7 +79,7 @@ public class SkipperCommands extends AbstractSkipperCommand {
 			@ShellOption(help = "wildcard expression to search for the package name", defaultValue = NULL) String name,
 			@ShellOption(help = "boolean to set for more detailed package metadata") boolean details)
 			throws Exception {
-		Resources<PackageMetadata> resources = skipperClient.getPackageMetadata(name, details);
+		Resources<PackageMetadata> resources = skipperClient.search(name, details);
 		if (!details) {
 			LinkedHashMap<String, Object> headers = new LinkedHashMap<>();
 			headers.put("name", "Name");

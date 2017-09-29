@@ -42,7 +42,7 @@ public interface SkipperClient {
 	/**
 	 * @return The AboutInfo for the server
 	 */
-	AboutInfo getAboutInfo();
+	AboutInfo info();
 
 	/**
 	 * Search for package metadata.
@@ -50,7 +50,7 @@ public interface SkipperClient {
 	 * @param details boolean flag to fetch all the metadata.
 	 * @return the package metadata with the projection set to summary
 	 */
-	Resources<PackageMetadata> getPackageMetadata(String name, boolean details);
+	Resources<PackageMetadata> search(String name, boolean details);
 
 	/**
 	 * Install the package.
