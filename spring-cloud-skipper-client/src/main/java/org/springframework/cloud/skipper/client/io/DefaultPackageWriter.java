@@ -34,6 +34,7 @@ import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Mark Pollack
@@ -56,11 +57,16 @@ public class DefaultPackageWriter implements PackageWriter {
 		File tmpDir = createTempDirectory("skipper" + pkg.getMetadata().getName()).toFile();
 		String packageMetadata = generatePackageMetadata(pkg.getMetadata());
 		writeText(new File(tmpDir, "package.yml"), packageMetadata);
-		writeText(new File(tmpDir, "values.yml"), pkg.getConfigValues().getRaw());
+		if (pkg.getConfigValues() != null && StringUtils.hasText(pkg.getConfigValues().getRaw())) {
+			writeText(new File(tmpDir, "values.yml"), pkg.getConfigValues().getRaw());
+		}
 		File templateDir = new File(tmpDir, "templates/");
 		templateDir.mkdirs();
 		File templateFile = new File(templateDir, pkg.getMetadata().getName() + ".yml");
 		writeText(templateFile, getDefaultTemplate());
+
+		//TODO write dependent packages!!
+
 		File targetZipFile = calculatePackageZipFile(pkg.getMetadata(), targetDirectory);
 		ZipUtil.pack(tmpDir, targetZipFile);
 		return targetZipFile;

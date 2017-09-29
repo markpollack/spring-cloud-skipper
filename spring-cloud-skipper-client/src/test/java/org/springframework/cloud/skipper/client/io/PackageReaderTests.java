@@ -16,12 +16,18 @@
 package org.springframework.cloud.skipper.client.io;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
+import org.yaml.snakeyaml.Yaml;
 
 import org.springframework.cloud.skipper.domain.Package;
+import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,5 +43,79 @@ public class PackageReaderTests {
 
 		Package pkg = packageReader.read(resource.getFile());
 		assertThat(pkg).isNotNull();
+		assertTickTockPackage(pkg);
+	}
+
+	private void assertTickTockPackage(Package pkg) {
+		PackageMetadata metadata = pkg.getMetadata();
+		assertThat(metadata.getApiVersion()).isEqualTo("v1");
+		assertThat(metadata.getKind()).isEqualTo("skipper");
+		assertThat(metadata.getName()).isEqualTo("ticktock");
+		assertThat(metadata.getVersion()).isEqualTo("1.0.0");
+		assertThat(metadata.getPackageSourceUrl()).isEqualTo("https://example.com/dataflow/ticktock");
+		assertThat(metadata.getPackageHomeUrl()).isEqualTo("http://example.com/dataflow/ticktock");
+		Set tagSet = convertToSet(metadata.getTags());
+		assertThat(tagSet).hasSize(3).contains("stream", "time", "log");
+		assertThat(metadata.getMaintainer()).isEqualTo("https://github.com/markpollack");
+		assertThat(metadata.getDescription()).isEqualTo("The ticktock stream sends a time stamp and logs the value.");
+		String rawYamlString = pkg.getConfigValues().getRaw();
+		Yaml yaml = new Yaml();
+		Map<String, String> valuesAsMap = (Map<String, String>) yaml.load(rawYamlString);
+		assertThat(valuesAsMap).hasSize(2).containsEntry("foo", "bar").containsEntry("biz", "baz");
+
+		assertThat(pkg.getDependencies()).hasSize(2);
+		assertTimeOrLogPackage(pkg.getDependencies().get(0));
+		assertTimeOrLogPackage(pkg.getDependencies().get(1));
+
+	}
+
+	private void assertTimeOrLogPackage(Package dependentPackage0) {
+		if (dependentPackage0.getMetadata().getName().equals("time")) {
+			assertTimePackage(dependentPackage0);
+		}
+		else {
+			assertLogPackage(dependentPackage0);
+		}
+	}
+
+	private void assertLogPackage(Package pkg) {
+		PackageMetadata metadata = pkg.getMetadata();
+		assertThat(metadata.getApiVersion()).isEqualTo("v1");
+		assertThat(metadata.getKind()).isEqualTo("skipper");
+		assertThat(metadata.getName()).isEqualTo("log");
+		assertThat(metadata.getVersion()).isEqualTo("2.0.0");
+		assertThat(metadata.getPackageSourceUrl())
+				.isEqualTo("https://github.com/spring-cloud-stream-app-starters/log/tree/v1.2.0.RELEASE");
+		assertThat(metadata.getPackageHomeUrl()).isEqualTo("http://cloud.spring.io/spring-cloud-stream-app-starters/");
+		Set tagSet = convertToSet(metadata.getTags());
+		assertThat(tagSet).hasSize(2).contains("logging", "sink");
+		assertThat(metadata.getMaintainer()).isEqualTo("https://github.com/sobychacko");
+		assertThat(metadata.getDescription())
+				.isEqualTo("The log sink uses the application logger to output the data for inspection.");
+	}
+
+	private void assertTimePackage(Package pkg) {
+		PackageMetadata metadata = pkg.getMetadata();
+		assertThat(metadata.getApiVersion()).isEqualTo("v1");
+		assertThat(metadata.getKind()).isEqualTo("skipper");
+		assertThat(metadata.getName()).isEqualTo("time");
+		assertThat(metadata.getVersion()).isEqualTo("2.0.0");
+		assertThat(metadata.getPackageSourceUrl())
+				.isEqualTo("https://github.com/spring-cloud-stream-app-starters/time/tree/v1.2.0.RELEASE");
+		assertThat(metadata.getPackageHomeUrl()).isEqualTo("http://cloud.spring.io/spring-cloud-stream-app-starters/");
+		Set tagSet = convertToSet(metadata.getTags());
+		assertThat(tagSet).hasSize(2).contains("time", "source");
+		assertThat(metadata.getMaintainer()).isEqualTo("https://github.com/sobychacko");
+		assertThat(metadata.getDescription()).isEqualTo("The time source periodically emits a timestamp string.");
+	}
+
+	private Set convertToSet(String tags) {
+		Set<String> initialSet = StringUtils.commaDelimitedListToSet(tags);
+
+		Set<String> setToReturn = initialSet.stream()
+				.map(StringUtils::trimAllWhitespace)
+				.collect(Collectors.toSet());
+
+		return setToReturn;
 	}
 }

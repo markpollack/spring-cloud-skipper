@@ -26,8 +26,8 @@ public interface PackageReader {
 
 	/**
 	 * Reads the Package from the specified file
-	 * @param file the package file
+	 * @param directory the directory containing the unzipped file
 	 * @return the corresponding Package
 	 */
-	Package read(File file);
+	Package read(File directory);
 }

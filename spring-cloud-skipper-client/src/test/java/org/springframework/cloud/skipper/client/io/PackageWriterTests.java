@@ -53,8 +53,6 @@ public class PackageWriterTests {
 	public void test() throws IOException {
 		PackageWriter packageWriter = new DefaultPackageWriter();
 		Package pkgtoWrite = createSimplePackage();
-		PackageMetadata packageMetadata = pkgtoWrite.getMetadata();
-
 		Path tempPath = Files.createTempDirectory("tests");
 		File outputDirectory = tempPath.toFile();
 
