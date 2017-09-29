@@ -33,11 +33,13 @@ import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 /**
  * @author Mark Pollack
+ * @author Ilayaperumal Gopinathan
  */
 public class DefaultPackageWriter implements PackageWriter {
 
@@ -54,22 +56,39 @@ public class DefaultPackageWriter implements PackageWriter {
 
 	@Override
 	public File write(Package pkg, File targetDirectory) {
-		File tmpDir = createTempDirectory("skipper" + pkg.getMetadata().getName()).toFile();
-		String packageMetadata = generatePackageMetadata(pkg.getMetadata());
-		writeText(new File(tmpDir, "package.yml"), packageMetadata);
-		if (pkg.getConfigValues() != null && StringUtils.hasText(pkg.getConfigValues().getRaw())) {
-			writeText(new File(tmpDir, "values.yml"), pkg.getConfigValues().getRaw());
+		PackageMetadata packageMetadata = pkg.getMetadata();
+		File tmpDir = createTempDirectory("skipper" + packageMetadata.getName()).toFile();
+		File rootPackageDir = new File(tmpDir,
+				String.format("%s-%s", packageMetadata.getName(), packageMetadata.getVersion()));
+		rootPackageDir.mkdir();
+		writePackage(pkg, rootPackageDir);
+		if (!pkg.getDependencies().isEmpty()) {
+			File packagesDir = new File(rootPackageDir, "packages");
+			packagesDir.mkdir();
+			for (Package dependencyPkg : pkg.getDependencies()) {
+				File packageDir = new File(packagesDir, dependencyPkg.getMetadata().getName());
+				packageDir.mkdir();
+				writePackage(dependencyPkg, packageDir);
+			}
 		}
-		File templateDir = new File(tmpDir, "templates/");
-		templateDir.mkdirs();
-		File templateFile = new File(templateDir, pkg.getMetadata().getName() + ".yml");
-		writeText(templateFile, getDefaultTemplate());
-
-		//TODO write dependent packages!!
-
 		File targetZipFile = calculatePackageZipFile(pkg.getMetadata(), targetDirectory);
-		ZipUtil.pack(tmpDir, targetZipFile);
+		ZipUtil.pack(rootPackageDir, targetZipFile, true);
+		FileSystemUtils.deleteRecursively(tmpDir);
 		return targetZipFile;
+	}
+
+	private void writePackage(Package pkg, File directory) {
+		String packageMetadata = generatePackageMetadata(pkg.getMetadata());
+		writeText(new File(directory, "package.yml"), packageMetadata);
+		if (pkg.getConfigValues() != null && StringUtils.hasText(pkg.getConfigValues().getRaw())) {
+			writeText(new File(directory, "values.yml"), pkg.getConfigValues().getRaw());
+		}
+		if (!pkg.getTemplates().isEmpty()) {
+			File templateDir = new File(directory, "templates/");
+			templateDir.mkdirs();
+			File templateFile = new File(templateDir, pkg.getMetadata().getName() + ".yml");
+			writeText(templateFile, getDefaultTemplate());
+		}
 	}
 
 	private String getDefaultTemplate() {
@@ -97,7 +116,8 @@ public class DefaultPackageWriter implements PackageWriter {
 		return yaml.dump(packageMetadata);
 	}
 
-	// TODO these methods shoudl move to some lower level package unless we want the skipper
+	// TODO these methods shoudl move to some lower level package unless we want the
+	// skipper
 	// server to depend on
 	// client.
 

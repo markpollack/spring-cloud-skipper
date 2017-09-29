@@ -218,7 +218,9 @@ public class PackageService implements ResourceLoaderAware {
 			Package packageToUpload = loadPackageOnPath(unpackagedFile);
 			PackageMetadata packageMetadata = packageToUpload.getMetadata();
 			// TODO: Model the PackageMetadata -> Repository relationship in the DB.
-			packageMetadata.setOrigin(localRepositoryToUpload.getId());
+			if (localRepositoryToUpload != null) {
+				packageMetadata.setOrigin(localRepositoryToUpload.getId());
+			}
 			packageMetadata.setPackageFileBytes(uploadRequest.getPackageFileAsBytes());
 			return this.packageMetadataRepository.save(packageMetadata);
 		}
@@ -234,8 +236,7 @@ public class PackageService implements ResourceLoaderAware {
 
 	private Repository getRepositoryToUpload(String repoName) {
 		Repository localRepositoryToUpload = this.repositoryRepository.findByName(repoName);
-		Assert.notNull(localRepositoryToUpload,
-				"Can not upload, local repository " + repoName + "doesn't exist.");
+		// todo: should we enforce the existence of the local repository always?
 		// TODO: Verify the repo name set to package upload properties always belong to local
 		// repository type.
 		return localRepositoryToUpload;
