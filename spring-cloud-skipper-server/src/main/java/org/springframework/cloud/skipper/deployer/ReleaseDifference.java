@@ -13,26 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.cloud.skipper.service;
+package org.springframework.cloud.skipper.deployer;
 
-import java.util.List;
+import org.springframework.util.Assert;
 
 /**
  * @author Mark Pollack
  */
-public class ReleaseAnalysisReport {
+public class ReleaseDifference {
 
-	private final List<String> applicationNamesToUpgrade;
+	private final boolean areEqual;
 
-	// high level description of changes. ReleaseDifference .getResourceDifferences,
-	// getAppDeploymentDifferences
-	// look at guava map's difference util class.
+	private final String differenceSummary;
 
-	public ReleaseAnalysisReport(List<String> applicationNamesToUpgrade) {
-		this.applicationNamesToUpgrade = applicationNamesToUpgrade;
+	public ReleaseDifference(boolean areEqual) {
+		this(areEqual, "No difference.");
 	}
 
-	public List<String> getApplicationNamesToUpgrade() {
-		return applicationNamesToUpgrade;
+	public ReleaseDifference(boolean areEqual, String differenceSummary) {
+		Assert.hasText(differenceSummary, "Difference Summary can not be null.");
+		this.areEqual = areEqual;
+		this.differenceSummary = differenceSummary;
+	}
+
+	boolean areEqual() {
+		return this.areEqual;
+	}
+
+	public String getDifferenceSummary() {
+		return differenceSummary;
 	}
 }

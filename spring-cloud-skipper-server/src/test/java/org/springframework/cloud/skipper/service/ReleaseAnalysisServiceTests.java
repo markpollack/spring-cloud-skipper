@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.AbstractIntegrationTest;
+import org.springframework.cloud.skipper.deployer.ReleaseAnalysisReport;
+import org.springframework.cloud.skipper.deployer.ReleaseAnalysisService;
 import org.springframework.cloud.skipper.domain.ConfigValues;
 import org.springframework.cloud.skipper.domain.InstallProperties;
 import org.springframework.cloud.skipper.domain.InstallRequest;
@@ -101,7 +103,6 @@ public class ReleaseAnalysisServiceTests extends AbstractIntegrationTest {
 		System.out.println("upgraded relerase \n" + upgradedRelease.getManifest());
 		ReleaseAnalysisReport releaseAnalysisReport = this.releaseAnalysisService.analyze(installedRelease,
 				upgradedRelease);
-
 
 		System.out.println("sleeping for 5 seconds ----------------");
 		Thread.sleep(5000);

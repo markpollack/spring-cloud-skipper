@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.SkipperException;
+import org.springframework.cloud.skipper.deployer.ReleaseAnalysisService;
 import org.springframework.cloud.skipper.domain.Info;
 import org.springframework.cloud.skipper.domain.InstallProperties;
 import org.springframework.cloud.skipper.domain.InstallRequest;
@@ -257,15 +258,8 @@ public class ReleaseService {
 		Assert.notNull(existingRelease, "Existing Release must not be null");
 		Assert.notNull(replacingRelease, "Replacing Release must not be null");
 
-		// TODO UpgradeStrategy (manfiestSave, healthCheck)
+		Release release = this.releaseManager.upgrade(existingRelease, replacingRelease, "simple");
 
-		Release release = this.releaseManager.upgrade(existingRelease, replacingRelease);
-
-		ReleaseAnalysisReport releaseAnalysisReport = this.releaseAnalysisService.analyze(existingRelease,
-				replacingRelease);
-		List<String> applicationNamesToUpgrade = releaseAnalysisReport.getApplicationNamesToUpgrade();
-
-		this.releaseManager.delete(existingRelease, applicationNamesToUpgrade);
 		return status(release);
 	}
 
