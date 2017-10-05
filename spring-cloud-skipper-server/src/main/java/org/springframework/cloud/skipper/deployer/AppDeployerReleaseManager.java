@@ -43,6 +43,8 @@ import org.springframework.cloud.skipper.domain.Status;
 import org.springframework.cloud.skipper.domain.StatusCode;
 import org.springframework.cloud.skipper.repository.DeployerRepository;
 import org.springframework.cloud.skipper.repository.ReleaseRepository;
+import org.springframework.cloud.skipper.service.ReleaseAnalysisReport;
+import org.springframework.cloud.skipper.service.ReleaseAnalysisService;
 import org.springframework.cloud.skipper.service.ReleaseManager;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -65,15 +67,19 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 
 	private final DeployerRepository deployerRepository;
 
+	private final ReleaseAnalysisService releaseAnalysisService;
+
 	@Autowired
 	public AppDeployerReleaseManager(ReleaseRepository releaseRepository,
 			AppDeployerDataRepository appDeployerDataRepository,
 			DelegatingResourceLoader delegatingResourceLoader,
-			DeployerRepository deployerRepository) {
+			DeployerRepository deployerRepository,
+			ReleaseAnalysisService releaseAnalysisService) {
 		this.releaseRepository = releaseRepository;
 		this.appDeployerDataRepository = appDeployerDataRepository;
 		this.delegatingResourceLoader = delegatingResourceLoader;
 		this.deployerRepository = deployerRepository;
+		this.releaseAnalysisService = releaseAnalysisService;
 	}
 
 	public Release install(Release releaseInput) {
@@ -85,7 +91,6 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		List<SpringBootAppKind> springBootAppKindList = springBootAppKindReader.read(release.getManifest());
 		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
 				.getAppDeployer();
-		// List<String> deploymentIds = new ArrayList<>();
 		Map<String, String> appNameDeploymentIdMap = new HashMap<>();
 		for (SpringBootAppKind springBootAppKind : springBootAppKindList) {
 			String deploymentId = appDeployer.deploy(
@@ -112,8 +117,57 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 	}
 
 	@Override
-	public Release upgrade(Release release, List<String> applicationNamesToUpgrade) {
-		return null;
+	public Release upgrade(Release existingRelease, Release replacingRelease) {
+
+		Release release = this.releaseRepository.save(replacingRelease);
+
+		ReleaseAnalysisReport releaseAnalysisReport = this.releaseAnalysisService.analyze(existingRelease,
+				replacingRelease);
+		List<String> applicationNamesToUpgrade = releaseAnalysisReport.getApplicationNamesToUpgrade();
+
+		// Deploy the application
+		SpringBootAppKindReader springBootAppKindReader = new SpringBootAppKindReader();
+		List<SpringBootAppKind> springBootAppKindList = springBootAppKindReader.read(release.getManifest());
+		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
+				.getAppDeployer();
+		Map<String, String> appNameDeploymentIdMap = new HashMap<>();
+		for (SpringBootAppKind springBootAppKind : springBootAppKindList) {
+			if (applicationNamesToUpgrade.contains(getApplicationName(springBootAppKind))) {
+				String deploymentId = appDeployer.deploy(
+						createAppDeploymentRequest(springBootAppKind, release.getName(),
+								String.valueOf(release.getVersion())));
+				appNameDeploymentIdMap.put(getApplicationName(springBootAppKind), deploymentId);
+			}
+		}
+
+		// Carry over the applicationDeployment information for apps that were not updated.
+		AppDeployerData existingAppDeployerData = this.appDeployerDataRepository.findByReleaseNameAndReleaseVersion(
+				existingRelease.getName(),
+				existingRelease.getVersion());
+		Map<String, String> existingAppNamesAndDeploymentIds = deserializeMap(
+				existingAppDeployerData.getDeploymentData());
+		for (Map.Entry<String, String> existingEntry : existingAppNamesAndDeploymentIds.entrySet()) {
+			String existingName = existingEntry.getKey();
+			if (!appNameDeploymentIdMap.containsKey(existingName)) {
+				appNameDeploymentIdMap.put(existingName, existingEntry.getValue());
+			}
+		}
+
+		AppDeployerData appDeployerData = new AppDeployerData();
+		appDeployerData.setReleaseName(release.getName());
+		appDeployerData.setReleaseVersion(release.getVersion());
+		appDeployerData.setDeploymentData(serializeMap(appNameDeploymentIdMap));
+
+		this.appDeployerDataRepository.save(appDeployerData);
+
+		// Update Status in DB
+		Status status = new Status();
+		status.setStatusCode(StatusCode.DEPLOYED);
+		release.getInfo().setStatus(status);
+		release.getInfo().setDescription("Upgrade complete");
+
+		// Store updated state in in DB and compute status
+		return status(this.releaseRepository.save(release));
 	}
 
 	private String serializeMap(Map<String, String> appNameDeploymentIdMap) {
@@ -194,9 +248,39 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 			Status deletedStatus = new Status();
 			deletedStatus.setStatusCode(StatusCode.DELETED);
 			release.getInfo().setStatus(deletedStatus);
-			release.getInfo().setDescription("Undeployment complete");
+			release.getInfo().setDescription("Delete complete");
 			this.releaseRepository.save(release);
 		}
+		return release;
+	}
+
+	@Override
+	public Release delete(Release release, List<String> applicationNamesToDelete) {
+
+		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
+				.getAppDeployer();
+
+		AppDeployerData appDeployerData = this.appDeployerDataRepository
+				.findByReleaseNameAndReleaseVersion(release.getName(), release.getVersion());
+
+		Map<String, String> appNamesAndDeploymentIds = deserializeMap(appDeployerData.getDeploymentData());
+
+		Status deletingStatus = new Status();
+		deletingStatus.setStatusCode(StatusCode.DELETING);
+		release.getInfo().setStatus(deletingStatus);
+		this.releaseRepository.save(release);
+
+		for (Map.Entry<String, String> appNameAndDeploymentId : appNamesAndDeploymentIds.entrySet()) {
+			if (applicationNamesToDelete.contains(appNameAndDeploymentId.getKey())) {
+				appDeployer.undeploy(appNameAndDeploymentId.getValue());
+			}
+		}
+
+		Status deletedStatus = new Status();
+		deletedStatus.setStatusCode(StatusCode.DELETED);
+		release.getInfo().setStatus(deletedStatus);
+		release.getInfo().setDescription("Delete complete");
+		this.releaseRepository.save(release);
 		return release;
 	}
 

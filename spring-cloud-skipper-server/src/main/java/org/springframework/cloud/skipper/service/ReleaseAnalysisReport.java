@@ -22,8 +22,17 @@ import java.util.List;
  */
 public class ReleaseAnalysisReport {
 
-	private List<String> applicationNamesToUpgrade;
+	private final List<String> applicationNamesToUpgrade;
 
-	// high level description of changes.  ReleaseDifference  .getResourceDifferences, getAppDeploymentDifferences
+	// high level description of changes. ReleaseDifference .getResourceDifferences,
+	// getAppDeploymentDifferences
 	// look at guava map's difference util class.
+
+	public ReleaseAnalysisReport(List<String> applicationNamesToUpgrade) {
+		this.applicationNamesToUpgrade = applicationNamesToUpgrade;
+	}
+
+	public List<String> getApplicationNamesToUpgrade() {
+		return applicationNamesToUpgrade;
+	}
 }

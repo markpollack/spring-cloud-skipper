@@ -27,8 +27,10 @@ import org.springframework.cloud.skipper.repository.ReleaseRepository;
 public class StubReleaseManager extends AppDeployerReleaseManager {
 
 	public StubReleaseManager(ReleaseRepository releaseRepository, AppDeployerDataRepository appDeployerDataRepository,
-			DelegatingResourceLoader delegatingResourceLoader, DeployerRepository deployerRepository) {
-		super(releaseRepository, appDeployerDataRepository, delegatingResourceLoader, deployerRepository);
+			DelegatingResourceLoader delegatingResourceLoader, DeployerRepository deployerRepository,
+			ReleaseAnalysisService releaseAnalysisService) {
+		super(releaseRepository, appDeployerDataRepository, delegatingResourceLoader, deployerRepository,
+				releaseAnalysisService);
 	}
 
 }

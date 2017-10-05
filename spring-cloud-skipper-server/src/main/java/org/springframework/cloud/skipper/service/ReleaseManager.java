@@ -15,9 +15,9 @@
  */
 package org.springframework.cloud.skipper.service;
 
-import org.springframework.cloud.skipper.domain.Release;
-
 import java.util.List;
+
+import org.springframework.cloud.skipper.domain.Release;
 
 /**
  * Manages the lifecycle of a releases.
@@ -33,9 +33,11 @@ public interface ReleaseManager {
 
 	Release install(Release release);
 
-	Release upgrade(Release release, List<String> applicationNamesToUpgrade);
+	Release upgrade(Release existingRelease, Release replacingRelease);
 
 	Release delete(Release release);
+
+	Release delete(Release release, List<String> applicationNamesToDelete);
 
 	Release status(Release release);
 

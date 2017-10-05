@@ -15,6 +15,14 @@
  */
 package org.springframework.cloud.skipper.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.cloud.skipper.domain.Package;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +33,22 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ReleaseAnalysisService {
+	private final Logger logger = LoggerFactory.getLogger(ReleaseAnalysisService.class);
 
 	public ReleaseAnalysisReport analyze(Release existingRelease, Release replacingRelease) {
-		System.out.println("Analayze this!");
-		return null;
+		List<String> appsToDelete = new ArrayList<>();
+		if (existingRelease.getPkg().getMetadata().getName().equals("ticktock")) {
+			appsToDelete.add("log");
+		}
+		else {
+			appsToDelete.add(replacingRelease.getPkg().getMetadata().getName());
+			for (Package dependentPackage : replacingRelease.getPkg().getDependencies()) {
+				appsToDelete.add(dependentPackage.getMetadata().getName());
+			}
+		}
+
+		logger.info("Apps to delete " + Arrays.toString(appsToDelete.toArray()));
+		ReleaseAnalysisReport report = new ReleaseAnalysisReport(appsToDelete);
+		return report;
 	}
 }

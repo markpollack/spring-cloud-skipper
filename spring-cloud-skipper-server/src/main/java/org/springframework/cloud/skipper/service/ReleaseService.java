@@ -75,12 +75,14 @@ public class ReleaseService {
 			ReleaseRepository releaseRepository,
 			PackageService packageService,
 			ReleaseManager releaseManager,
-			DeployerRepository deployerRepository) {
+			DeployerRepository deployerRepository,
+			ReleaseAnalysisService releaseAnalysisService) {
 		this.packageMetadataRepository = packageMetadataRepository;
 		this.releaseRepository = releaseRepository;
 		this.packageService = packageService;
 		this.releaseManager = releaseManager;
 		this.deployerRepository = deployerRepository;
+		this.releaseAnalysisService = releaseAnalysisService;
 	}
 
 	/**
@@ -254,12 +256,16 @@ public class ReleaseService {
 	public Release upgrade(Release existingRelease, Release replacingRelease) {
 		Assert.notNull(existingRelease, "Existing Release must not be null");
 		Assert.notNull(replacingRelease, "Replacing Release must not be null");
-		// ReleaseAnalysisReport releaseAnalysisReport =
-		// this.releaseAnalysisService.analyze(existingRelease, replacingRelease);
 
-		Release release = this.releaseManager.install(replacingRelease);
 		// TODO UpgradeStrategy (manfiestSave, healthCheck)
-		this.releaseManager.delete(existingRelease);
+
+		Release release = this.releaseManager.upgrade(existingRelease, replacingRelease);
+
+		ReleaseAnalysisReport releaseAnalysisReport = this.releaseAnalysisService.analyze(existingRelease,
+				replacingRelease);
+		List<String> applicationNamesToUpgrade = releaseAnalysisReport.getApplicationNamesToUpgrade();
+
+		this.releaseManager.delete(existingRelease, applicationNamesToUpgrade);
 		return status(release);
 	}
 
