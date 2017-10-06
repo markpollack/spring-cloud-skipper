@@ -16,6 +16,8 @@
 package org.springframework.cloud.skipper.controller;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.cloud.skipper.domain.InstallProperties;
 import org.springframework.cloud.skipper.domain.InstallRequest;
@@ -35,9 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Ilayaperumal Gopinathan
  */
 @ActiveProfiles("repo-test")
-@TestPropertySource(properties = { "spring.cloud.skipper.server.platform.local.accounts[test].key=value",
+@TestPropertySource(properties = { // "spring.cloud.skipper.server.platform.local.accounts[test].key=value",
 		"maven.remote-repositories.repo1.url=http://repo.spring.io/libs-snapshot" })
 public class SkipperControllerTests extends AbstractControllerTests {
+
+	private final Logger logger = LoggerFactory.getLogger(SkipperControllerTests.class);
 
 	@Test
 	public void deployTickTock() throws Exception {
@@ -71,6 +75,7 @@ public class SkipperControllerTests extends AbstractControllerTests {
 
 		// Deploy
 		String releaseName = "test1";
+		printAllDeployers("SkipperController.checkDeployStatus");
 		Release release = deploy("log", "1.0.0", releaseName);
 		assertReleaseIsDeployedSuccessfully(releaseName, "1");
 		assertThat(release.getVersion()).isEqualTo(1);
@@ -87,6 +92,7 @@ public class SkipperControllerTests extends AbstractControllerTests {
 
 		// Deploy
 		String releaseName = "test2";
+		printAllDeployers("SkipperController.releaseRollbackAndUndeploy");
 		Release release = deploy("log", "1.0.0", releaseName);
 		assertReleaseIsDeployedSuccessfully(releaseName, "1");
 		assertThat(release.getVersion()).isEqualTo(1);

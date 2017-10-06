@@ -22,11 +22,13 @@ import org.springframework.cloud.deployer.spi.cloudfoundry.CloudFoundryDeployerA
 import org.springframework.cloud.deployer.spi.kubernetes.KubernetesAutoConfiguration;
 import org.springframework.cloud.deployer.spi.local.LocalDeployerAutoConfiguration;
 import org.springframework.data.map.repository.config.EnableMapRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = { CloudFoundryDeployerAutoConfiguration.class,
 		LocalDeployerAutoConfiguration.class, KubernetesAutoConfiguration.class })
 @EnableMapRepositories
+@EnableScheduling
 public class SkipperServerApplication {
 
 	public static void main(String[] args) {

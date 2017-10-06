@@ -15,8 +15,6 @@
  */
 package org.springframework.cloud.skipper.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.skipper.SkipperException;
 import org.springframework.cloud.skipper.deployer.Deployer;
 
 /**
@@ -24,15 +22,21 @@ import org.springframework.cloud.skipper.deployer.Deployer;
  */
 public class DeployerRepositoryImpl implements DeployerRepositoryCustom {
 
-	@Autowired
+	// @Autowired
 	private DeployerRepository deployerRepository;
 
 	@Override
 	public Deployer findByNameRequired(String name) {
-		Deployer deployer = deployerRepository.findByName(name);
-		if (deployer == null) {
-			throw new SkipperException(String.format("Can not install, no deployer named '%s'", name));
-		}
-		return deployer;
+		return null;
+		// Deployer deployer = deployerRepository.findByName(name);
+		// if (deployer == null) {
+		// List<Deployer> list = StreamSupport
+		// .stream(deployerRepository.findAll().spliterator(), false)
+		// .collect(Collectors.toList());
+		// throw new SkipperException(String.format("No deployer named '%s' in DeployerRepository.
+		// " +
+		// "Existing deployers %s.", name, Arrays.toString(list.toArray())));
+		// }
+		// return deployer;
 	}
 }

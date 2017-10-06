@@ -96,6 +96,8 @@ public class DeployerInitializationService {
 	protected void createAndSaveLocalAppDeployers() {
 		Map<String, LocalDeployerProperties> localDeployerPropertiesMap = localPlatformProperties.getAccounts();
 		if (localDeployerPropertiesMap.isEmpty()) {
+			logger.info(
+					"No local platform deployers defined, adding local deployer named 'default' into localPlatformProperties.");
 			localDeployerPropertiesMap.put("default", new LocalDeployerProperties());
 		}
 		for (Map.Entry<String, LocalDeployerProperties> entry : localDeployerPropertiesMap

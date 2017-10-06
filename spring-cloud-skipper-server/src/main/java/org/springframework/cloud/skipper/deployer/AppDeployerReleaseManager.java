@@ -16,6 +16,7 @@
 package org.springframework.cloud.skipper.deployer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,7 @@ import org.springframework.cloud.skipper.domain.StatusCode;
 import org.springframework.cloud.skipper.repository.DeployerRepository;
 import org.springframework.cloud.skipper.repository.ReleaseRepository;
 import org.springframework.cloud.skipper.service.ReleaseManager;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 
 /**
  * A ReleaseManager implementation that uses an AppDeployer.
@@ -49,7 +48,6 @@ import org.springframework.util.StringUtils;
  * @author Mark Pollack
  * @author Ilayaperumal Gopinathan
  */
-@Service
 public class AppDeployerReleaseManager implements ReleaseManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(AppDeployerReleaseManager.class);
@@ -80,7 +78,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 	public Release install(Release releaseInput) {
 
 		Release release = this.releaseRepository.save(releaseInput);
-		logger.debug("Manifest = " + releaseInput.getManifest());
+
 		// Deploy the application
 		List<SpringBootAppKind> springBootAppKindList = SpringBootAppKindReader.read(release.getManifest());
 		AppDeployer appDeployer = this.deployerRepository.findByNameRequired(release.getPlatformName())
@@ -99,7 +97,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 		appDeployerData.setReleaseName(release.getName());
 		appDeployerData.setReleaseVersion(release.getVersion());
 		appDeployerData.setDeploymentDataUsingMap(appNameDeploymentIdMap);
-
+		logger.debug("Install saved DeploymentIdMap = " + Arrays.toString(appNameDeploymentIdMap.entrySet().toArray()));
 		this.appDeployerDataRepository.save(appDeployerData);
 
 		// Update Status in DB
@@ -121,6 +119,7 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 				replacingRelease);
 
 		if (!releaseAnalysisReport.getReleaseDifference().areEqual()) {
+
 			logger.info("Difference report for upgrade of release " + replacingRelease.getName());
 			logger.info(releaseAnalysisReport.getReleaseDifference().getDifferenceSummary());
 			// Do upgrades
@@ -153,11 +152,10 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 				.getAppDeployer();
 		AppDeployerData appDeployerData = this.appDeployerDataRepository
 				.findByReleaseNameAndReleaseVersion(release.getName(), release.getVersion());
+
 		List<String> deploymentIds = appDeployerData.getDeploymentIds();
-		deploymentIds.addAll(StringUtils.commaDelimitedListToSet(appDeployerData.getDeploymentData()));
 		logger.debug("Getting status for {} using deploymentIds {}", release,
 				StringUtils.collectionToCommaDelimitedString(deploymentIds));
-
 
 		if (!deploymentIds.isEmpty()) {
 			// mainly track deployed and unknown statuses. for any other
@@ -178,19 +176,19 @@ public class AppDeployerReleaseManager implements ReleaseManager {
 				platformStatusMessages.add(statusMsg.toString());
 
 				switch (appStatus.getState()) {
-					case deployed:
-						deployedCount++;
-						break;
-					case unknown:
-						unknownCount++;
-						break;
-					case deploying:
-					case undeployed:
-					case partial:
-					case failed:
-					case error:
-					default:
-						break;
+				case deployed:
+					deployedCount++;
+					break;
+				case unknown:
+					unknownCount++;
+					break;
+				case deploying:
+				case undeployed:
+				case partial:
+				case failed:
+				case error:
+				default:
+					break;
 				}
 			}
 			if (deployedCount == deploymentIds.size()) {

@@ -70,7 +70,7 @@ public class ReleaseServiceTests extends AbstractIntegrationTest {
 	public void testInstall() {
 		InstallProperties installProperties = new InstallProperties();
 		installProperties.setReleaseName("logrelease");
-		installProperties.setPlatformName("default");
+		installProperties.setPlatformName("test"); //comes from application-repo.test.yml via profile
 		InstallRequest installRequest = new InstallRequest();
 		installRequest.setInstallProperties(installProperties);
 		PackageIdentifier packageIdentifier = new PackageIdentifier();
@@ -90,7 +90,7 @@ public class ReleaseServiceTests extends AbstractIntegrationTest {
 	public void testStatusReleaseExist() {
 		InstallProperties installProperties = new InstallProperties();
 		installProperties.setReleaseName("testexists");
-		installProperties.setPlatformName("default");
+		installProperties.setPlatformName("test"); //comes from application-repo.test.yml via profile
 		InstallRequest installRequest = new InstallRequest();
 		installRequest.setInstallProperties(installProperties);
 		PackageIdentifier packageIdentifier = new PackageIdentifier();

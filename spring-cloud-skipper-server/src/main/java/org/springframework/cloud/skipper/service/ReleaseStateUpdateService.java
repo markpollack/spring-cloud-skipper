@@ -15,30 +15,41 @@
  */
 package org.springframework.cloud.skipper.service;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.skipper.deployer.Deployer;
 import org.springframework.cloud.skipper.domain.Info;
 import org.springframework.cloud.skipper.domain.Release;
+import org.springframework.cloud.skipper.repository.DeployerRepository;
 import org.springframework.cloud.skipper.repository.ReleaseRepository;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 /**
- * Service which schedules background updates for applications known to {@link ReleaseRepository}.
+ * Service which schedules background updates for applications known to
+ * {@link ReleaseRepository}.
  *
  * @author Janne Valkealahti
  *
  */
-@Service
-public class ReleaseStateUpdateService {
+public class ReleaseStateUpdateService implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(ReleaseStateUpdateService.class);
+
 	private final ReleaseService releaseService;
+
 	private final ReleaseRepository releaseRepository;
+
+	private final DeployerRepository deployerRepository;
+
 	private long nextFullPoll;
 
 	/**
@@ -47,11 +58,14 @@ public class ReleaseStateUpdateService {
 	 * @param releaseService the release service
 	 * @param releaseRepository the release repository
 	 */
-	public ReleaseStateUpdateService(ReleaseService releaseService, ReleaseRepository releaseRepository) {
+	@Autowired
+	public ReleaseStateUpdateService(ReleaseService releaseService, ReleaseRepository releaseRepository,
+			DeployerRepository deployerRepository) {
 		Assert.notNull(releaseService, "'releaseService' must be set");
 		Assert.notNull(releaseRepository, "'releaseRepository' must be set");
 		this.releaseService = releaseService;
 		this.releaseRepository = releaseRepository;
+		this.deployerRepository = deployerRepository;
 		this.nextFullPoll = getNextFullPoll();
 		log.info("Setting up ReleaseStateUpdateService");
 	}
@@ -73,18 +87,29 @@ public class ReleaseStateUpdateService {
 				boolean poll = fullPoll || (info.getLastDeployed().getTime() > (now - 120000));
 				if (poll) {
 					try {
+						printAllDeployers();
 						release = releaseService.status(release);
 						log.debug("New Release state {} {}", release.getName(), release.getInfo().getStatus(),
 								release.getInfo().getStatus() != null
-										? release.getInfo().getStatus().getPlatformStatus() : "");
+										? release.getInfo().getStatus().getPlatformStatus()
+										: "");
 						releaseRepository.save(release);
 					}
 					catch (Exception e) {
-						log.warn("Unable to update release status", e);
+						log.warn("Unable to update release status for release " + release, e);
 					}
 				}
 			}
 		}
+	}
+
+	private void printAllDeployers() {
+		log.info("**** ReleaseStateUpdateService instance = " + this);
+		log.info("**** DeployerRepository instance = " + deployerRepository);
+		List<Deployer> list = StreamSupport
+				.stream(deployerRepository.findAll().spliterator(), false)
+				.collect(Collectors.toList());
+		log.info("**** Deployers in ReleaseStatUpdateService " + Arrays.toString(list.toArray()));
 	}
 
 	/**
@@ -95,5 +120,10 @@ public class ReleaseStateUpdateService {
 	private long getNextFullPoll() {
 		long next = System.currentTimeMillis() + 120000;
 		return next - (next % 120000);
+	}
+
+	@Override
+	public void run() {
+		update();
 	}
 }

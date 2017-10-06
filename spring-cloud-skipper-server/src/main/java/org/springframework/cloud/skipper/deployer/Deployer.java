@@ -18,16 +18,12 @@ package org.springframework.cloud.skipper.deployer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.cloud.deployer.spi.app.AppDeployer;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.keyvalue.annotation.KeySpace;
 
 /**
  * @author Mark Pollack
  */
-@KeySpace("deployer")
 public class Deployer {
 
-	@Id
 	private String id;
 
 	private String name;
@@ -48,6 +44,10 @@ public class Deployer {
 
 	public String getId() {
 		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -72,5 +72,14 @@ public class Deployer {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "Deployer{" +
+				"id='" + id + '\'' +
+				", name='" + name + '\'' +
+				", type='" + type + '\'' +
+				'}';
 	}
 }

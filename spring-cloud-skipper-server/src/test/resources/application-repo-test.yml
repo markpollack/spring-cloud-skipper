@@ -7,3 +7,11 @@ spring:
          -
            name: test
            url: "classpath:/repositories/binaries/test"
+        platform:
+          local:
+            accounts:
+              test:
+                shutdownTimeout: 60
+                javaOpts: "-Dtest=foo"
+              localDevDebug:
+                javaOpts: "-Xdebug"

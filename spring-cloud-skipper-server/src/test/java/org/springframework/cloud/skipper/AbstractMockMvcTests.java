@@ -17,17 +17,25 @@ package org.springframework.cloud.skipper;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.skipper.deployer.Deployer;
+import org.springframework.cloud.skipper.repository.DeployerRepository;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -47,6 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @AutoConfigureMockMvc
 public abstract class AbstractMockMvcTests {
 
+	private final Logger logger = LoggerFactory.getLogger(AbstractMockMvcTests.class);
+
 	private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
 			MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
@@ -54,6 +64,9 @@ public abstract class AbstractMockMvcTests {
 
 	@Autowired
 	protected WebApplicationContext wac;
+
+	@Autowired
+	private DeployerRepository deployerRepository;
 
 	public static String convertObjectToJson(Object object) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
@@ -88,6 +101,7 @@ public abstract class AbstractMockMvcTests {
 			MvcResult result = mockMvc.perform(get(String.format("/status/%s/%s", releaseName, releaseVersion)))
 					.andDo(print()).andReturn();
 			String content = result.getResponse().getContentAsString();
+			printAllDeployers("AbstractMockMvcTests.isDeployed");
 			return content.startsWith(getSuccessStatus(releaseName, releaseVersion));
 		}
 		catch (Exception e) {
@@ -99,6 +113,14 @@ public abstract class AbstractMockMvcTests {
 		return "{\"name\":\"" + release + "\",\"version\":" + version + ","
 				+ "\"info\":{\"status\":{\"statusCode\":\"DEPLOYED\","
 				+ "\"platformStatus\":\"All the applications are deployed successfully";
+	}
+
+	protected void printAllDeployers(String callsite) {
+		List<Deployer> list = StreamSupport
+				.stream(deployerRepository.findAll().spliterator(), false)
+				.collect(Collectors.toList());
+		logger.info("**** SkipperControllerTests deployerRepository instance " + deployerRepository);
+		logger.info("**** SkipperControllerTests : Deployers = " + Arrays.toString(list.toArray()));
 	}
 
 }

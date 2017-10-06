@@ -28,8 +28,6 @@ import org.springframework.cloud.skipper.domain.PackageIdentifier;
 import org.springframework.cloud.skipper.domain.Release;
 import org.springframework.cloud.skipper.domain.UpgradeProperties;
 import org.springframework.cloud.skipper.domain.UpgradeRequest;
-import org.springframework.cloud.skipper.repository.DeployerRepository;
-import org.springframework.cloud.skipper.repository.ReleaseRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
@@ -43,13 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ReleaseAnalysisServiceTests extends AbstractIntegrationTest {
 
 	@Autowired
-	DeployerRepository deployerRepository;
-
-	@Autowired
 	ReleaseService releaseService;
-
-	@Autowired
-	ReleaseRepository releaseRepository;
 
 	@Autowired
 	ReleaseAnalysisService releaseAnalysisService;
@@ -57,7 +49,7 @@ public class ReleaseAnalysisServiceTests extends AbstractIntegrationTest {
 	@Test
 	public void test() throws InterruptedException {
 
-		String platformName = "default";
+		String platformName = "test"; //comes from application-repo.test.yml via profile
 
 		String releaseName = "logrelease";
 		String packageName = "ticktock";

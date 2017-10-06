@@ -38,8 +38,7 @@ public class DeployerRepositoryTests extends AbstractIntegrationTest {
 		LocalAppDeployer localAppDeployer = new LocalAppDeployer(new LocalDeployerProperties());
 		Deployer deployer = new Deployer("localDeployer", "local", localAppDeployer);
 		this.deployerRepository.save(deployer);
-		// Count is 2 including the default one which was added at the time of bootstrap.
-		assertThat(deployerRepository.count()).isEqualTo(2);
+		assertThat(deployerRepository.count()).isEqualTo(1);
 		assertThat(deployer.getId()).isNotEmpty();
 		assertThat(deployerRepository.findByName("localDeployer")).isNotNull();
 	}

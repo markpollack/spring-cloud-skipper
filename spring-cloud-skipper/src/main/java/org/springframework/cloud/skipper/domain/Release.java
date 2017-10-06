@@ -154,4 +154,12 @@ public class Release extends AbstractEntity {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Release{" +
+				"name='" + name + '\'' +
+				", version=" + version +
+				'}';
+	}
 }

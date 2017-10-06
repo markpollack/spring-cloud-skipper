@@ -45,7 +45,6 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StreamUtils;
@@ -57,7 +56,6 @@ import org.springframework.util.StreamUtils;
  * @author Mark Pollack
  * @author Ilayaperumal Gopinathan
  */
-@Service
 public class PackageService implements ResourceLoaderAware {
 
 	private final Logger logger = LoggerFactory.getLogger(PackageService.class);

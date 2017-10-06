@@ -15,32 +15,39 @@
  */
 package org.springframework.cloud.skipper.repository;
 
+import java.util.List;
+
 import org.springframework.cloud.skipper.deployer.Deployer;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
 
 /**
  * @author Mark Pollack
  */
-@RepositoryRestResource
-public interface DeployerRepository extends PagingAndSortingRepository<Deployer, String>, DeployerRepositoryCustom {
+// @RepositoryRestResource
+public interface DeployerRepository { // extends CrudRepository<Deployer, String>, DeployerRepositoryCustom {
 
 	Deployer findByName(String name);
 
-	@Override
-	@RestResource(exported = false)
-	Deployer save(Deployer deployer);
+	Deployer findByNameRequired(String name);
 
-	@Override
-	@RestResource(exported = false)
-	void delete(String s);
+	Deployer save(Deployer entity);
 
-	@Override
-	@RestResource(exported = false)
-	void delete(Deployer deployer);
+	List<Deployer> findAll();
 
-	@Override
-	@RestResource(exported = false)
-	void deleteAll();
+	int count();
+
+	// @Override
+	// @RestResource(exported = false)
+	// Deployer save(Deployer deployer);
+	//
+	// @Override
+	// @RestResource(exported = false)
+	// void delete(String s);
+	//
+	// @Override
+	// @RestResource(exported = false)
+	// void delete(Deployer deployer);
+	//
+	// @Override
+	// @RestResource(exported = false)
+	// void deleteAll();
 }
