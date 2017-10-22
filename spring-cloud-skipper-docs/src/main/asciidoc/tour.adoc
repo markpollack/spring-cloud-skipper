@@ -1,9 +1,85 @@
 [[skipper-tour]]
 = Using Skipper
 
-[[skipper-three-hour-tour]]
-== A three hour tour
+This section is the 'three hour tour' of Skipper.  It descriptes how to configure and use the main feature set of Skipper in detail.  We will cover, platforms, packages, repositories, releases and update strategies.
 
-Hopefully not three hours!
+[[skipper-platforms]]
+== Platforms
+
+Skipper supports deploying to multiple platforms.
+The platforms included in the 1.0 M1 release are Local, Cloud Foundry and Kubernetes.
+For each platform, you can configure multiple accounts.
+Each `account name` must be globally unique accross all platforms.
+
+Usually different `accounts` will correspond to a different orgs/spaces for Cloud Foundry and different clusters/namespaces for Kubernetes.
+
+NOTE: Roles to control which user can deploy to which platform will be provided in the next release.
 
 
+Platforms are defined using Spring Boot's https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html[Externalied Configuration] feature.
+To simplify setup in 1.0 M1, if a local platform account is not defined in your configuration, Skipper will create a `local` deployer implementation named `default`.
+
+You can make use of the http://cloud.spring.io/spring-cloud-static/spring-cloud-config/1.3.3.RELEASE/multi/multi__spring_cloud_config_server.html#_encryption_and_decryption[Encryption and Decryption] features of Spring Cloud Config as one way to secure credentials.
+
+Distinct from where Skipper will deploy application, you can also run the Skipper server itself on a platform.  Installation on other platforms is covered in the <<skipper-installation>> section.
+
+=== Local Platform configuration
+
+Here is an example YAML file to configure two local deployer accounts named `localDev` and `localDevDebug`
+```
+spring:
+  cloud:
+    skipper:
+      server:
+        platform:
+          local:
+            accounts:
+              localDev:
+                shutdownTimeout: 60
+                javaOpts: "-Dtest=foo"
+              localDevDebug:
+                javaOpts: "-Xdebug"
+```
+
+The key-value pairs that follow the name of the account are `javaCmd`, `workingDirectoriesRoot`, `deleteFilesOnExit`, `envVarsToInherit`, `shutdownTimeout`, `javaOpts`, and `useSpringApplicationJson`.  More information can be found in the JavaDocs for https://github.com/spring-cloud/spring-cloud-deployer-local/blob/master/spring-cloud-deployer-local/src/main/java/org/springframework/cloud/deployer/spi/local/LocalDeployerProperties.java[LocalDeployerProperties].
+
+=== Cloud Foundry configuration
+
+
+```
+spring:
+  cloud:
+    skipper:
+      server:
+        platform
+          cloudfoundry:
+            accounts:
+              cf-dev:
+                connection:
+                  url: https://api.run.pivotal.io
+                  org: myOrg
+                  space: mySpace
+                  domain: cfapps.io
+                  username: cf-dev@example.com
+                  password: drowssap
+                  skipSslValidation: false
+                deployment:
+                  memory: 2048m
+                  disk: 2048m
+                  services: rabbit
+              cf-qa:
+                connection:
+                  url: https://api.run.pivotal.io
+                  org: myOrgQA
+                  space: mySpaceQA
+                  domain: cfapps.io
+                  username: cf-qa@example.com
+                  password: drowssap
+                  skipSslValidation: true
+                deployment:
+                  memory: 1024m
+                  disk: 1024m
+                  services: rabbitQA
+
+```
+Here is an example YAML file to configure two local deployer accounts named `localDev` and `localDevDebug`

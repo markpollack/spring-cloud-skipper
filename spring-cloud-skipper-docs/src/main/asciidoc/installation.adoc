@@ -1,0 +1,13 @@
+[[skipper-installation]]
+= Using Skipper
+
+[[skipper-installation-local]]
+== Installing on a local machine
+
+
+[[skipper-installation-cloudfoundry]]
+== Installing on Cloud Foundry
+
+[[skipper-installation-kubernetes]]
+== Installing on Kubernetes
+
