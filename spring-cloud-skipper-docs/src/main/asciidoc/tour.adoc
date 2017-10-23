@@ -82,4 +82,31 @@ spring:
                   services: rabbitQA
 
 ```
-Here is an example YAML file to configure two local deployer accounts named `localDev` and `localDevDebug`
+Here is an example YAML file to configure two CF deployer accounts named `cf-dev` and `cf-qa`
+
+=== Kubernetes configuration
+
+
+```
+spring:
+  cloud:
+    skipper:
+      server:
+        platform:
+          kubernetes:
+            accounts:
+              accounts:
+                dev:
+                  namespace: devNamespace
+                  imagePullPolicy: Always
+                  entryPointStyle: exec
+                  limits:
+                  cpu: 4
+                qa:
+                  namespace: qaNamespace
+                  imagePullPolicy: IfNotPresent
+                  entryPointStyle: boot
+                  limits:
+                  memory: 1024m
+```
+Here is an example YAML file to configure two Kubernetes deployer accounts named `dev` and `qa`.
