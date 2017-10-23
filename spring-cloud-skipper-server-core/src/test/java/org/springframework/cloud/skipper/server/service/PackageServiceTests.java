@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.yaml.snakeyaml.Yaml;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,10 +47,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
+ * Uses @Transactional for ease of re-using existing JPA managed objects within
+ * Spring's managed test method transaction
  * @author Mark Pollack
  * @author Ilayaperumal Gopinathan
  */
 @ActiveProfiles("repo-test")
+@Transactional
 public class PackageServiceTests extends AbstractIntegrationTest {
 
 	private final Logger logger = LoggerFactory.getLogger(PackageServiceTests.class);
