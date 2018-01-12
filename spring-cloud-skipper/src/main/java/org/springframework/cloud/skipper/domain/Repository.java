@@ -15,10 +15,16 @@
  */
 package org.springframework.cloud.skipper.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Repository for the packages.
@@ -67,9 +73,21 @@ public class Repository extends AbstractEntity {
 	 */
 	private Integer repoOrder;
 
+	@OneToMany(
+			mappedBy = "repository",
+			cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH}
+	)
+	@JsonBackReference
+	private List<PackageMetadata> packageMetadataList = new ArrayList<>();
+
 	// TODO security/checksum fields of referenced index file.
 
 	public Repository() {
+	}
+
+	public void addPackageMetadata(PackageMetadata packageMetadata) {
+		packageMetadataList.add(packageMetadata);
+		packageMetadata.setRepository(this);
 	}
 
 	public String getName() {
@@ -118,6 +136,40 @@ public class Repository extends AbstractEntity {
 
 	public void setRepoOrder(Integer repoOrder) {
 		this.repoOrder = repoOrder;
+	}
+
+	public List<PackageMetadata> getPackageMetadataList() {
+		return packageMetadataList;
+	}
+
+	public void setPackageMetadataList(List<PackageMetadata> packageMetadataList) {
+		this.packageMetadataList = packageMetadataList;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || !(o instanceof Repository)) return false;
+
+		Repository that = (Repository) o;
+
+		if (!name.equals(that.name)) return false;
+		if (url != null ? !url.equals(that.url) : that.url != null) return false;
+		if (sourceUrl != null ? !sourceUrl.equals(that.sourceUrl) : that.sourceUrl != null) return false;
+		if (local != null ? !local.equals(that.local) : that.local != null) return false;
+		if (description != null ? !description.equals(that.description) : that.description != null) return false;
+		return repoOrder != null ? repoOrder.equals(that.repoOrder) : that.repoOrder == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = name.hashCode();
+		result = 31 * result + (url != null ? url.hashCode() : 0);
+		result = 31 * result + (sourceUrl != null ? sourceUrl.hashCode() : 0);
+		result = 31 * result + (local != null ? local.hashCode() : 0);
+		result = 31 * result + (description != null ? description.hashCode() : 0);
+		result = 31 * result + (repoOrder != null ? repoOrder.hashCode() : 0);
+		return result;
 	}
 
 	@Override

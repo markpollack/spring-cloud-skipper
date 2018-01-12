@@ -16,27 +16,30 @@
 package org.springframework.cloud.skipper.server.repository;
 
 import org.springframework.cloud.skipper.domain.PackageMetadata;
+import org.springframework.cloud.skipper.domain.Repository;
 
 /**
  * @author Mark Pollack
  */
 public class PackageMetadataCreator {
 
-	public static void createTwoPackages(PackageMetadataRepository repository) {
+	public static void createTwoPackages(PackageMetadataRepository packageMetadataRepository,
+										 Repository repository) {
 		PackageMetadata packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion("1");
 		packageMetadata.setOrigin("www.package-repos.com/repo1");
-		packageMetadata.setRepositoryId(1L);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package1");
 		packageMetadata.setVersion("1.0.0");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a2.gif");
 		packageMetadata.setDescription("A very cool project");
 		packageMetadata.setMaintainer("Alan Hale Jr.");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
+
+
 		packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion("1");
-		packageMetadata.setRepositoryId(1L);
 		packageMetadata.setOrigin("www.package-repos.com/repo2");
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package2");
@@ -44,73 +47,85 @@ public class PackageMetadataCreator {
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a1.gif");
 		packageMetadata.setMaintainer("Bob Denver");
 		packageMetadata.setDescription("Another very cool project");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
 	}
 
-	public static void createPackageWithMultipleVersions(PackageMetadataRepository repository) {
+	public static void createPackageWithMultipleVersions(PackageMetadataRepository packageMetadataRepository,
+														 Repository repository) {
 		PackageMetadata packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion("1");
-		packageMetadata.setRepositoryId(1L);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package1");
 		packageMetadata.setVersion("1.0.0");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a2.gif");
 		packageMetadata.setDescription("A very cool project");
 		packageMetadata.setMaintainer("Alan Hale Jr.");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
+
+
 		packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion("1");
-		packageMetadata.setRepositoryId(1L);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package1");
 		packageMetadata.setVersion("2.0.0");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a1.gif");
 		packageMetadata.setMaintainer("Bob Denver");
 		packageMetadata.setDescription("Another very cool project");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
+
+
 		packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion("1");
-		packageMetadata.setRepositoryId(1L);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package2");
 		packageMetadata.setVersion("1.0.1");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a1.gif");
 		packageMetadata.setMaintainer("Bob Denver");
 		packageMetadata.setDescription("Another very cool project");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
+
+
 		packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion("1");
-		packageMetadata.setRepositoryId(1L);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package2");
 		packageMetadata.setVersion("1.1.0");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a1.gif");
 		packageMetadata.setMaintainer("Bob Denver");
 		packageMetadata.setDescription("Another very cool project");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
 	}
 
-	public static void createTwoPackages(PackageMetadataRepository repository, Long repoId, String apiVersion) {
+	public static void createTwoPackages(PackageMetadataRepository packageMetadataRepository,
+										 Repository repository,
+										 String apiVersion) {
 		PackageMetadata packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion(apiVersion);
-		packageMetadata.setRepositoryId(repoId);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package1");
 		packageMetadata.setVersion("1.0.0");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a2.gif");
 		packageMetadata.setDescription("A very cool project");
 		packageMetadata.setMaintainer("Alan Hale Jr.");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
+
+
 		packageMetadata = new PackageMetadata();
 		packageMetadata.setApiVersion(apiVersion);
-		packageMetadata.setRepositoryId(repoId);
 		packageMetadata.setKind("skipper");
 		packageMetadata.setName("package2");
 		packageMetadata.setVersion("2.0.0");
 		packageMetadata.setIconUrl("http://www.gilligansisle.com/images/a1.gif");
 		packageMetadata.setMaintainer("Bob Denver");
 		packageMetadata.setDescription("Another very cool project");
-		repository.save(packageMetadata);
+		repository.addPackageMetadata(packageMetadata);
+		packageMetadataRepository.save(packageMetadata);
 	}
 
 

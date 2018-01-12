@@ -28,19 +28,20 @@ public class RepositoryCreator {
 		repository.setName("stable");
 		repository.setUrl("http://www.example.com/skipper/repository/stable");
 		repositoryRepository.save(repository);
+
 		repository = new Repository();
 		repository.setName("unstable");
 		repository.setUrl("http://www.example.com/skipper/repository/unstable");
 		repositoryRepository.save(repository);
 	}
 
-	public static void createRepository(RepositoryRepository repositoryRepository, String repoName,
+	public static Repository createRepository(RepositoryRepository repositoryRepository, String repoName,
 			Integer repoOrder) {
 		Repository repository = new Repository();
 		repository.setName(repoName);
 		repository.setUrl("http://www.example.com/skipper/repository/" + repoName);
-		repositoryRepository.save(repository);
 		repository.setRepoOrder(repoOrder);
 		repositoryRepository.save(repository);
+		return repository;
 	}
 }

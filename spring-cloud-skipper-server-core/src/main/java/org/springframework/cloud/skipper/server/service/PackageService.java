@@ -96,7 +96,7 @@ public class PackageService implements ResourceLoaderAware {
 			targetPath = TempFileUtils.createTempDirectory("skipper" + packageMetadata.getName());
 			File targetFile = SkipperUtils.calculatePackageZipFile(packageMetadata, targetPath.toFile());
 			logger.debug("Finding repository for package  {}", packageMetadata.getName());
-			Repository packageRepository = repositoryRepository.findOne(packageMetadata.getRepositoryId());
+			Repository packageRepository = repositoryRepository.findOne(packageMetadata.getRepository().getId());
 			if (packageRepository == null) {
 				return throwDescriptiveException(packageMetadata);
 			}
@@ -128,12 +128,12 @@ public class PackageService implements ResourceLoaderAware {
 		catch (IOException ex) {
 			throw new SkipperException("Exception while downloading package zip file for "
 					+ packageMetadata.getName() + "-" + packageMetadata.getVersion() +
-					". PackageMetadata repositoryId = " + packageMetadata.getRepositoryId(), ex);
+					". PackageMetadata repositoryId = " + packageMetadata.getRepository().getName(), ex);
 		}
 		catch (InvalidDataAccessApiUsageException ex) {
 			throw new SkipperException("Exception while downloading package zip file for "
 					+ packageMetadata.getName() + "-" + packageMetadata.getVersion() +
-					". PackageMetadata repositoryId = " + packageMetadata.getRepositoryId() +
+					". PackageMetadata repositoryId = " + packageMetadata.getRepository().getName() +
 					"No repository found.", ex);
 		}
 		catch (Exception ex) {
@@ -151,7 +151,7 @@ public class PackageService implements ResourceLoaderAware {
 				.stream(repositoryRepository.findAll().spliterator(), false)
 				.collect(Collectors.toList());
 		throw new SkipperException("Can not find packageRepository with Id = "
-				+ packageMetadata.getRepositoryId() + ". Known repositories are " + Arrays.toString(list.toArray()));
+				+ packageMetadata.getRepository().getName() + ". Known repositories are " + Arrays.toString(list.toArray()));
 	}
 
 	private Package deserializePackageFromDatabase(PackageMetadata packageMetadata) {
@@ -222,7 +222,7 @@ public class PackageService implements ResourceLoaderAware {
 			PackageMetadata packageMetadata = packageToUpload.getMetadata();
 			// TODO: Model the PackageMetadata -> Repository relationship in the DB.
 			if (localRepositoryToUpload != null) {
-				packageMetadata.setRepositoryId(localRepositoryToUpload.getId());
+				localRepositoryToUpload.addPackageMetadata(packageMetadata);;
 			}
 			packageMetadata.setPackageFileBytes(uploadRequest.getPackageFileAsBytes());
 			return this.packageMetadataRepository.save(packageMetadata);

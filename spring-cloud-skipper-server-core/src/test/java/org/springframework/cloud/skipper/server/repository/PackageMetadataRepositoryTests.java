@@ -21,7 +21,9 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
+import org.springframework.cloud.skipper.domain.Repository;
 import org.springframework.cloud.skipper.server.AbstractIntegrationTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Pollack
  * @author Ilayaperumal Gopinathan
  */
+@Transactional
 public class PackageMetadataRepositoryTests extends AbstractIntegrationTest {
 
 	@Autowired
@@ -39,7 +42,10 @@ public class PackageMetadataRepositoryTests extends AbstractIntegrationTest {
 
 	@Test
 	public void basicCrud() {
-		PackageMetadataCreator.createTwoPackages(this.packageMetadataRepository);
+		Repository repository =
+				RepositoryCreator.createRepository(this.repositoryRepository, "testRepo", 0);
+
+		PackageMetadataCreator.createTwoPackages(this.packageMetadataRepository, repository);
 		Iterable<PackageMetadata> packages = this.packageMetadataRepository.findAll();
 		assertThat(packages).isNotEmpty();
 		assertThat(packages).hasSize(2);
@@ -57,7 +63,9 @@ public class PackageMetadataRepositoryTests extends AbstractIntegrationTest {
 
 	@Test
 	public void verifyMultipleVersions() {
-		PackageMetadataCreator.createPackageWithMultipleVersions(this.packageMetadataRepository);
+		Repository repository =
+				RepositoryCreator.createRepository(this.repositoryRepository, "testRepo", 0);
+		PackageMetadataCreator.createPackageWithMultipleVersions(this.packageMetadataRepository, repository);
 		Iterable<PackageMetadata> packages = this.packageMetadataRepository.findAll();
 		assertThat(packages).isNotEmpty();
 		assertThat(packages).hasSize(4);
@@ -66,7 +74,7 @@ public class PackageMetadataRepositoryTests extends AbstractIntegrationTest {
 		PackageMetadata latestPackage2 = this.packageMetadataRepository.findFirstByNameOrderByVersionDesc("package2");
 		assertThat(latestPackage2.getVersion()).isEqualTo("1.1.0");
 
-		PackageMetadata aPackage = this.packageMetadataRepository.findByRepositoryIdAndNameAndVersion(1L,
+		PackageMetadata aPackage = this.packageMetadataRepository.findByRepositoryAndNameAndVersion(repository,
 				"package1", "2.0.0");
 		assertThat(aPackage.getVersion()).isEqualTo("2.0.0");
 
@@ -74,7 +82,9 @@ public class PackageMetadataRepositoryTests extends AbstractIntegrationTest {
 
 	@Test
 	public void findByNameQueries() {
-		PackageMetadataCreator.createPackageWithMultipleVersions(this.packageMetadataRepository);
+		Repository repository =
+				RepositoryCreator.createRepository(this.repositoryRepository, "testRepo", 0);
+		PackageMetadataCreator.createPackageWithMultipleVersions(this.packageMetadataRepository, repository);
 		Iterable<PackageMetadata> packages = this.packageMetadataRepository.findByNameContainingIgnoreCase("PACK");
 		assertThat(packages).isNotEmpty();
 		assertThat(packages).hasSize(4);
@@ -95,22 +105,22 @@ public class PackageMetadataRepositoryTests extends AbstractIntegrationTest {
 		RepositoryCreator.createRepository(this.repositoryRepository, repoName2, 1);
 		RepositoryCreator.createRepository(this.repositoryRepository, repoName3, 2);
 		PackageMetadataCreator.createTwoPackages(this.packageMetadataRepository,
-				this.repositoryRepository.findByName(repoName1).getId(), "1.0.0");
+				this.repositoryRepository.findByName(repoName1), "1.0.0");
 		PackageMetadataCreator.createTwoPackages(this.packageMetadataRepository,
-				this.repositoryRepository.findByName(repoName2).getId(), "2.0.1");
+				this.repositoryRepository.findByName(repoName2), "2.0.1");
 		PackageMetadataCreator.createTwoPackages(this.packageMetadataRepository,
-				this.repositoryRepository.findByName(repoName3).getId(), "1.0.1");
+				this.repositoryRepository.findByName(repoName3), "1.0.1");
 		List<PackageMetadata> packageMetadataList = this.packageMetadataRepository
 				.findByNameAndVersionOrderByApiVersionDesc("package1", "1.0.0");
 		assertThat(packageMetadataList.size()).isEqualTo(3);
 		assertThat(packageMetadataList.get(0).getName()).isEqualTo("package1");
 		assertThat(packageMetadataList.get(0).getVersion()).isEqualTo("1.0.0");
-		assertThat(packageMetadataList.get(0).getRepositoryId()).isEqualTo(this.repositoryRepository.findByName(repoName2)
+		assertThat(packageMetadataList.get(0).getRepository().getId()).isEqualTo(this.repositoryRepository.findByName(repoName2)
 				.getId());
 		PackageMetadata packageMetadata = this.packageMetadataRepository.findByNameAndVersionByMaxRepoOrder("package1",
 				"1.0.0");
 		assertThat(packageMetadata.getApiVersion()).isEqualTo("1.0.1");
-		assertThat(packageMetadata.getRepositoryId()).isEqualTo(this.repositoryRepository.findByName(repoName3).getId());
+		assertThat(packageMetadata.getRepository().getId()).isEqualTo(this.repositoryRepository.findByName(repoName3).getId());
 	}
 
 }

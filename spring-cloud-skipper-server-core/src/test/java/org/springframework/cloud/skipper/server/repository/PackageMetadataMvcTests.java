@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.skipper.domain.PackageMetadata;
+import org.springframework.cloud.skipper.domain.Repository;
 import org.springframework.cloud.skipper.server.AbstractMockMvcTests;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -38,6 +39,9 @@ public class PackageMetadataMvcTests extends AbstractMockMvcTests {
 	@Autowired
 	private PackageMetadataRepository packageMetadataRepository;
 
+	@Autowired
+	private RepositoryRepository repositoryRepository;
+
 	@Test
 	public void shouldReturnRepositoryIndex() throws Exception {
 		mockMvc.perform(get("/api")).andDo(print()).andExpect(status().isOk()).andExpect(
@@ -46,7 +50,9 @@ public class PackageMetadataMvcTests extends AbstractMockMvcTests {
 
 	@Test
 	public void testProjection() throws Exception {
-		PackageMetadataCreator.createTwoPackages(packageMetadataRepository);
+		Repository repository =
+				RepositoryCreator.createRepository(this.repositoryRepository, "testRepo", 0);
+		PackageMetadataCreator.createTwoPackages(packageMetadataRepository ,repository);
 		PackageMetadata packageMetadata = packageMetadataRepository.findByNameAndVersionByMaxRepoOrder("package1", "1.0.0");
 		assertThat(packageMetadata.getId()).isNotNull();
 		packageMetadata = packageMetadataRepository.findByNameAndVersionByMaxRepoOrder("package2", "2.0.0");

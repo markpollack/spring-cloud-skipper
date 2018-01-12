@@ -16,11 +16,15 @@
 package org.springframework.cloud.skipper.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  * Metadata for the Package.
@@ -43,11 +47,6 @@ public class PackageMetadata extends AbstractEntity {
 	 * Indicates the origin of the repository (free form text).
 	 */
 	private String origin;
-
-	/**
-	 * The repository ID this Package Index file belongs to.
-	 */
-	private Long repositoryId;
 
 	/**
 	 * What type of package system is being used.
@@ -114,6 +113,11 @@ public class PackageMetadata extends AbstractEntity {
 	 * Url location of a icon. TODO: size specification
 	 */
 	private String iconUrl;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "SkipperRepository_id")
+	@JsonIgnore
+	private Repository repository;
 
 	public PackageMetadata() {
 	}
@@ -232,12 +236,12 @@ public class PackageMetadata extends AbstractEntity {
 		this.iconUrl = iconUrl;
 	}
 
-	public Long getRepositoryId() {
-		return repositoryId;
+	public Repository getRepository() {
+		return repository;
 	}
 
-	public void setRepositoryId(Long repositoryId) {
-		this.repositoryId = repositoryId;
+	public void setRepository(Repository repository) {
+		this.repository = repository;
 	}
 
 	@Override
@@ -255,9 +259,6 @@ public class PackageMetadata extends AbstractEntity {
 			return false;
 		}
 		if (origin != null ? !origin.equals(that.origin) : that.origin != null) {
-			return false;
-		}
-		if (repositoryId != null ? !repositoryId.equals(that.repositoryId) : that.repositoryId != null) {
 			return false;
 		}
 		if (kind != null ? !kind.equals(that.kind) : that.kind != null) {
@@ -314,7 +315,7 @@ public class PackageMetadata extends AbstractEntity {
 				"id='" + getId() + '\'' +
 				", apiVersion='" + apiVersion + '\'' +
 				", origin='" + origin + '\'' +
-				", repositoryId='" + repositoryId + '\'' +
+				", repository ='" + repository.getName() + '\'' +
 				", kind='" + kind + '\'' +
 				", name='" + name + '\'' +
 				", version='" + version + '\'' +
@@ -327,4 +328,6 @@ public class PackageMetadata extends AbstractEntity {
 				", iconUrl='" + iconUrl + '\'' +
 				'}';
 	}
+
+
 }

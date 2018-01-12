@@ -77,8 +77,8 @@ public class RepositoryInitializationService {
 		try {
 			List<PackageMetadata> packageMetadataList = this.packageMetadataService.downloadPackageMetadata();
 			for (PackageMetadata packageMetadata : packageMetadataList) {
-				if (this.packageMetadataRepository.findByRepositoryIdAndNameAndVersion(
-						packageMetadata.getRepositoryId(),
+				if (this.packageMetadataRepository.findByRepositoryAndNameAndVersion(
+						packageMetadata.getRepository(),
 						packageMetadata.getName(),
 						packageMetadata.getVersion()) == null) {
 					this.packageMetadataRepository.save(packageMetadata);

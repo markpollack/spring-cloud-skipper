@@ -52,7 +52,7 @@ public class PackageMetadataRepositoryImpl implements PackageMetadataRepositoryC
 		for (Repository repository : repositoriesByRepoOrder) {
 			Long repoId = repository.getId();
 			for (PackageMetadata packageMetadata : packageMetadataList) {
-				if ((packageMetadata.getRepositoryId() != null) && packageMetadata.getRepositoryId().equals(repoId)) {
+				if ((packageMetadata.getRepository() != null) && packageMetadata.getRepository().getId().equals(repoId)) {
 					return packageMetadata;
 				}
 			}

@@ -94,8 +94,8 @@ public class PackageServiceTests extends AbstractIntegrationTest {
 		assertThat(packageMetadata.getPackageFileBytes()).isNullOrEmpty();
 		assertThat(packageService).isNotNull();
 		assertThat(packageMetadata.getId()).isNotNull();
-		assertThat(packageMetadata.getRepositoryId()).isNotNull();
-		Repository repository = repositoryRepository.findOne(packageMetadata.getRepositoryId());
+		assertThat(packageMetadata.getRepository().getId()).isNotNull();
+		Repository repository = repositoryRepository.findOne(packageMetadata.getRepository().getId());
 		assertThat(repository).isNotNull();
 
 		Package downloadedPackage = packageService.downloadPackage(packageMetadata);
@@ -164,6 +164,8 @@ public class PackageServiceTests extends AbstractIntegrationTest {
 		Package pkg = packageService.downloadPackage(packageMetadata);
 		assertThat(pkg).isNotNull();
 		assertThat(pkg.getConfigValues().getRaw()).contains("1.2.0.RC1");
+		System.out.println("original package metadata name = " + packageMetadata.getName());
+		System.out.println("downloaded package metadata name = " + pkg.getMetadata().getName());
 		assertThat(pkg.getMetadata()).isEqualToIgnoringGivenFields(packageMetadata, "id", "origin", "packageFile");
 		assertThat(pkg.getTemplates()).hasSize(1);
 		Template template = pkg.getTemplates().get(0);
