@@ -97,9 +97,9 @@ public class ListDocumentation extends BaseDocumentation {
 								fieldWithPath("[].pkg.metadata.sha256").description(
 										"Hash of package binary that will be downloaded using SHA256 hash algorithm"),
 								fieldWithPath("[].pkg.metadata.iconUrl").description("Url location of a icon"),
-								fieldWithPath("[].pkg.templates[].name")
+								fieldWithPath("[].pkg.templates[][].name")
 										.description("Name is the path-like name of the template"),
-								fieldWithPath("[].pkg.templates[].data")
+								fieldWithPath("[].pkg.templates[][].data")
 										.description("Data is the template as string data"),
 								fieldWithPath("[].pkg.dependencies")
 										.description("The packages that this package depends upon"),
@@ -109,8 +109,10 @@ public class ListDocumentation extends BaseDocumentation {
 										.description("Miscellaneous files in a package, e.g. README, LICENSE, etc."),
 								fieldWithPath("[].configValues.raw")
 										.description("The raw YAML string of configuration values"),
-								fieldWithPath("[].manifest").description("The manifest of the release"),
-								fieldWithPath("[].platformName").description("Platform name of the release"))));
+								fieldWithPath("[].manifest.data").description("The manifest of the release"),
+								fieldWithPath("[].platformName").description("Platform name of the release"))
+
+				));
 	}
 
 	@Test
