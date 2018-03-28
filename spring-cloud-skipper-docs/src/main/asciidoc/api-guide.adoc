@@ -9,7 +9,7 @@ This section covers the Spring Cloud Skipper REST API.
 [[api-guide-overview]]
 == Overview
 
-Spring Cloud Skipper provides a  REST API that lets you access all aspects of the server.
+Spring Cloud Skipper provides a REST API that lets you access all aspects of the server.
 The Spring Cloud Skipper shell is a first-class consumer of the API.
 
 [[api-guide-overview-http-verbs]]
